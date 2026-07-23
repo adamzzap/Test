@@ -208,7 +208,7 @@
         <b>zzap</b>
         <span>Weekly Resourcing</span>
         <span class="zzap-weekLabel" id="week-label" style="display:none;"></span>
-        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v2-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v4-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
@@ -307,6 +307,28 @@
 (function () {
   "use strict";
 
+  // Last-resort safety net: if anything anywhere in this script throws an
+  // uncaught error, show it on the page instead of leaving a silently
+  // broken feature with no clue why.
+  var fatalShown = false;
+  function showFatalError(message) {
+    if (fatalShown) return;
+    fatalShown = true;
+    var host = document.querySelector(".zzap-app") || document.body;
+    var box = document.createElement("div");
+    box.style.cssText = "margin:16px;padding:14px;border:2px solid #C0392B;border-radius:8px;background:#FBEEEC;color:#7A2020;font-family:-apple-system,sans-serif;font-size:13px;";
+    box.innerHTML = "<strong>Uncaught error:</strong><br/>" +
+      String(message).replace(/[<>]/g, "") + "<br/><br/>" +
+      "Please screenshot this exact message.";
+    host.insertBefore(box, host.firstChild);
+  }
+  window.addEventListener("error", function (e) {
+    showFatalError(e.error ? (e.error.message || String(e.error)) : e.message);
+  });
+  window.addEventListener("unhandledrejection", function (e) {
+    showFatalError(e.reason && e.reason.message ? e.reason.message : String(e.reason));
+  });
+
   /* ================================================================ */
   /* FIREBASE CONFIG — replace this URL with your own Firebase project */
   /* ================================================================ */
@@ -346,7 +368,7 @@
 
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
 
-  const BUILD_STAMP = "Build 2026-07-22 · v2-standalone";
+  const BUILD_STAMP = "Build 2026-07-22 · v4-standalone";
 
   const STANDARD_PEOPLE = [
     "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark",
@@ -435,7 +457,7 @@
     for (let j = 0; j <= n; j++) prev[j] = j;
     for (let i = 1; i <= m; i++) {
       curr[0] = i;
-      for (j = 1; j <= n; j++) {
+      for (let j = 1; j <= n; j++) {
         const cost = a[i - 1] === b[j - 1] ? 0 : 1;
         curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
       }
@@ -1154,16 +1176,20 @@
   function handleParse() {
     const text = el.transcriptBox.value.trim();
     if (!text) return;
-    const parsed = parseDescription(text, allPeople());
-    state.proposals = parsed;
-    renderProposals();
-    const incomplete = parsed.filter(function (p) { return !proposalReady(p); }).length;
-    if (parsed.length === 0) {
-      el.voiceMsg.textContent = "Couldn't find anything to parse — try rephrasing.";
-    } else if (incomplete === 0) {
-      el.voiceMsg.textContent = "Found " + parsed.length + " assignment" + (parsed.length > 1 ? "s" : "") + " — review below, then add.";
-    } else {
-      el.voiceMsg.textContent = "Found " + parsed.length + " assignment" + (parsed.length > 1 ? "s" : "") + " — " + incomplete + " need" + (incomplete === 1 ? "s" : "") + " a missing field set before adding.";
+    try {
+      const parsed = parseDescription(text, allPeople());
+      state.proposals = parsed;
+      renderProposals();
+      const incomplete = parsed.filter(function (p) { return !proposalReady(p); }).length;
+      if (parsed.length === 0) {
+        el.voiceMsg.textContent = "Couldn't find anything to parse — try rephrasing.";
+      } else if (incomplete === 0) {
+        el.voiceMsg.textContent = "Found " + parsed.length + " assignment" + (parsed.length > 1 ? "s" : "") + " — review below, then add.";
+      } else {
+        el.voiceMsg.textContent = "Found " + parsed.length + " assignment" + (parsed.length > 1 ? "s" : "") + " — " + incomplete + " need" + (incomplete === 1 ? "s" : "") + " a missing field set before adding.";
+      }
+    } catch (e) {
+      el.voiceMsg.textContent = "Error while parsing: " + (e.message || String(e)) + " — please report this exact message.";
     }
   }
 
