@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>zzap — Weekly Resourcing</title>
+<style>
+  :root {
+    --paper:#F7F6F3; --ink:#1F2A33; --ink-soft:#5B6770; --line:#DBDCD7;
+    --accent:#2C5F74; --accent-soft:#E4EEF1;
+    --available:#3C8253; --near:#B9821B; --conflict:#C0392B; --severe:#7A2020; --vacation:#9AA0A6; --carryover:#7D8286;
+    --surface:#FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--paper); }
+  .zzap-app {
+    max-width:480px; margin:0 auto; min-height:100vh;
+    background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-bottom:48px;
+  }
+  button, select, input, textarea { font-family:inherit; }
+  button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+  .zzap-header {
+    position:sticky; top:0; z-index:5; background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .zzap-headerTop {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 16px 10px;
+  }
+  .zzap-wordmark { display:flex; flex-direction:column; line-height:1.15; }
+  .zzap-wordmark b { font-size:20px; letter-spacing:0.02em; font-weight:700; }
+  .zzap-wordmark span { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .zzap-build { font-size:9px !important; letter-spacing:0.04em !important; text-transform:none !important; color:var(--ink-soft); opacity:0.7; margin-top:2px; }
+  .zzap-weekLabel { font-size:12px !important; letter-spacing:0.02em !important; text-transform:none !important; color:var(--ink); font-weight:600; margin-top:3px; }
+  .zzap-headerNote {
+    font-size:10px; font-weight:700; letter-spacing:0.02em; line-height:1.45;
+    color:var(--accent); background:var(--accent-soft);
+    padding:7px 16px; border-top:1px solid var(--line);
+  }
+  .zzap-errorDetail {
+    font-size:10px; font-weight:600; line-height:1.4; color:var(--conflict);
+    background:#FBEEEC; padding:6px 16px; border-top:1px solid var(--line);
+    word-break:break-word; display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .zzap-retryBtn {
+    font-size:10px; font-weight:700; color:#fff; background:var(--conflict);
+    border:none; border-radius:4px; padding:2px 8px; flex-shrink:0;
+  }
+  .zzap-headerRight { display:flex; align-items:center; gap:10px; }
+  .zzap-statusPill { font-size:11px; letter-spacing:0.02em; color:var(--ink-soft); white-space:nowrap; }
+  .zzap-statusPill.ok { color:var(--available); }
+  .zzap-statusPill.err { color:var(--conflict); }
+  .zzap-iconBtn {
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    width:38px; height:38px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  }
+  .zzap-iconBtn:active { background:var(--accent-soft); }
+  .zzap-section { padding:18px 16px 4px; }
+  .zzap-sectionLabel {
+    font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft);
+    margin-bottom:10px; font-weight:600;
+  }
+  .zzap-sectionRow { display:flex; align-items:center; justify-content:space-between; }
+  .zzap-sectionRow .zzap-sectionLabel { margin-bottom:10px; }
+  .zzap-clearBtn {
+    font-size:11px; font-weight:600; color:var(--ink-soft); background:transparent;
+    border:1px solid var(--line); border-radius:5px; padding:3px 8px; margin-bottom:8px;
+  }
+  .zzap-clearBtn.confirm { color:#fff; background:var(--conflict); border-color:var(--conflict); }
+  .zzap-card {
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:14px; margin-bottom:10px;
+  }
+  .zzap-transcript {
+    width:100%; min-height:88px; border:1px solid var(--line); border-radius:6px;
+    padding:10px; font-size:16px; background:var(--surface); color:var(--ink); resize:vertical;
+  }
+  .zzap-parseBtn {
+    width:100%; height:44px; border-radius:6px; border:1px solid var(--accent); margin-top:10px;
+    background:var(--accent-soft); color:var(--accent); font-size:14px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .zzap-parseBtn:disabled { border-color:var(--line); color:var(--ink-soft); background:var(--surface); }
+  .zzap-voiceMsg { font-size:12px; color:var(--ink-soft); margin-top:8px; }
+  .zzap-voiceHint { font-size:12px; color:var(--ink-soft); margin-top:6px; font-style:italic; }
+  .zzap-proposal { border-left:4px solid var(--accent); }
+  .zzap-proposal.ready { border-left-color:var(--available); }
+  .zzap-propGrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px; }
+  .zzap-propGrid .wide { grid-column:1 / -1; }
+  .zzap-propGrid select, .zzap-propGrid input {
+    width:100%; height:42px; border:1px solid var(--line); border-radius:6px;
+    padding:0 8px; font-size:15px; background:var(--surface); color:var(--ink);
+  }
+  .zzap-propGrid select.missing, .zzap-propGrid input.missing { border-color:var(--conflict); }
+  .zzap-propActions { display:flex; gap:8px; }
+  .zzap-propAdd {
+    flex:1; height:40px; border-radius:6px; border:none; background:var(--accent); color:#fff;
+    font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .zzap-propAdd:disabled { background:var(--line); color:var(--ink-soft); }
+  .zzap-propRemove {
+    width:40px; height:40px; border-radius:6px; border:1px solid var(--line); background:var(--surface);
+    color:var(--ink-soft); display:flex; align-items:center; justify-content:center;
+  }
+  .zzap-addAllBtn {
+    width:100%; height:44px; border-radius:6px; border:none; margin-top:2px; margin-bottom:8px;
+    background:var(--available); color:#fff; font-size:14px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .zzap-field { margin-bottom:10px; }
+  .zzap-field label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:4px; }
+  .zzap-field select, .zzap-field input {
+    width:100%; height:44px; border:1px solid var(--line); border-radius:6px;
+    padding:0 10px; font-size:16px; background:var(--surface); color:var(--ink);
+  }
+  .zzap-addBtn {
+    width:100%; height:46px; border-radius:6px; border:none; margin-top:4px;
+    background:var(--accent); color:#fff; font-size:15px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .zzap-addBtn:disabled { background:var(--line); color:var(--ink-soft); }
+  .zzap-personRow { margin-bottom:16px; }
+  .zzap-personTop { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px; }
+  .zzap-personName { font-size:14px; font-weight:600; }
+  .zzap-personMeta {
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    font-variant-numeric:tabular-nums; font-size:13px; font-weight:600;
+    display:flex; gap:8px; align-items:baseline;
+  }
+  .zzap-personMeta .status { font-family:inherit; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; font-weight:700; }
+  .zzap-remainingLine { font-size:11px; color:var(--ink-soft); margin-bottom:6px; }
+  .zzap-track { position:relative; height:20px; border-radius:3px; background:#EFEFEC; border:1px solid var(--line); overflow:hidden; }
+  .zzap-tick { position:absolute; top:0; bottom:0; width:1px; background:var(--line); z-index:1; }
+  .zzap-fill { position:absolute; top:0; left:0; bottom:0; z-index:2; }
+  .zzap-fillVacation {
+    position:absolute; top:0; bottom:0; z-index:2;
+    background-color: var(--vacation);
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 3px, transparent 3px, transparent 6px);
+  }
+  .zzap-fillCarry {
+    position:absolute; top:0; bottom:0; z-index:2;
+    background-color: var(--carryover);
+    background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 2px, transparent 2px, transparent 5px);
+  }
+  .zzap-mark100 { position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--ink); opacity:0.6; z-index:3; }
+  .zzap-cardRow.over { border-left:4px solid var(--conflict); background:#FBEEEC; }
+  .zzap-cardRow.severe { border-left:4px solid var(--severe); background:#F8E6E4; }
+  .zzap-cardRow.urgent { border:2px solid var(--conflict); }
+  .zzap-cardRow.urgent.over, .zzap-cardRow.urgent.severe { border-left-width:4px; }
+  .zzap-cardRow.urgent.severe { border-left-color:var(--severe); }
+  .zzap-cardTop { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .zzap-cardPersonSelect {
+    font-weight:700; font-size:14px; color:var(--ink); background:var(--surface);
+    border:none; border-bottom:1px dashed var(--line); padding:0 2px 1px 0;
+    cursor:pointer; max-width:150px;
+  }
+  .zzap-cardPersonSelect:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .zzap-capSelect {
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace; font-weight:700; font-size:13px;
+    height:30px; border:1px solid var(--line); border-radius:6px; padding:0 6px;
+    background:var(--surface); color:var(--ink);
+  }
+  .zzap-cardMeta { font-size:13px; color:var(--ink-soft); margin-top:2px; }
+  .zzap-cardNotes { font-size:13px; color:var(--ink-soft); font-style:italic; margin-top:6px; }
+  .zzap-checkboxRow {
+    display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft);
+    margin:2px 0 10px; cursor:pointer;
+  }
+  .zzap-checkboxRow input { width:18px; height:18px; flex-shrink:0; }
+  .zzap-carryBadge {
+    display:inline-block; font-size:11px; font-weight:600; color:var(--carryover);
+    background:#EEEFF0; border:1px solid var(--carryover); border-radius:4px;
+    padding:2px 6px; margin-top:8px;
+  }
+  .zzap-delBtn {
+    border:none; background:transparent; color:var(--ink-soft); width:30px; height:30px;
+    display:flex; align-items:center; justify-content:center; border-radius:6px; flex-shrink:0;
+  }
+  .zzap-delBtn:active { background:var(--accent-soft); }
+  .zzap-warnLine { display:flex; align-items:center; gap:6px; color:var(--conflict); font-size:12px; font-weight:700; margin-top:10px; }
+  .zzap-priorityRow { display:flex; align-items:center; justify-content:space-between; margin-top:10px; gap:10px; }
+  .zzap-priorityRow label { font-size:12px; color:var(--ink-soft); }
+  .zzap-priorityRow select { height:36px; border:1px solid var(--line); border-radius:6px; font-size:14px; background:var(--surface); color:var(--ink); padding:0 8px; }
+  .zzap-empty { text-align:center; color:var(--ink-soft); font-size:13px; padding:24px 0; }
+  .zzap-legend { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); margin:-4px 0 10px; flex-wrap:wrap; }
+  .zzap-legendSwatch { width:10px; height:10px; border-radius:2px; display:inline-block; margin-left:8px; }
+  .zzap-legendSwatch:first-child { margin-left:0; }
+  .zzap-legendVacation {
+    background-color: var(--vacation);
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 1.5px, transparent 1.5px, transparent 3px);
+  }
+  .zzap-legendCarry {
+    background-color: var(--carryover);
+    background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 1px, transparent 1px, transparent 2.5px);
+  }
+</style>
+</head>
+<body>
+
+<div class="zzap-app">
+  <div class="zzap-header">
+    <div class="zzap-headerTop">
+      <div class="zzap-wordmark">
+        <b>zzap</b>
+        <span>Weekly Resourcing</span>
+        <span class="zzap-weekLabel" id="week-label" style="display:none;"></span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v1-standalone</span>
+      </div>
+      <div class="zzap-headerRight">
+        <span class="zzap-statusPill" id="status-pill">Loading…</span>
+        <button class="zzap-iconBtn" id="refresh-btn" aria-label="Refresh shared data">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="zzap-headerNote">
+      CLEARS END OF DAY THURSDAY OF EVERY WEEK. ADD APPROVED VACATION TIME AND UNFINISHED PROJECT WORK ON FRIDAY BY NOON FOR RESOURCING PURPOSES.
+    </div>
+    <div class="zzap-errorDetail" id="error-detail" style="display:none;">
+      <span id="error-detail-text"></span>
+      <button class="zzap-retryBtn" id="retry-btn">Retry now</button>
+    </div>
+  </div>
+
+  <div class="zzap-section">
+    <div class="zzap-sectionLabel">Describe a resourcing need</div>
+    <div class="zzap-card">
+      <textarea
+        class="zzap-transcript"
+        id="transcript-box"
+        placeholder='Type or dictate — e.g. "Kyle and Cassie on Casino Lands at 1.5 days for schematic, Lisa on 1888 Brunswick at 1 day for permit"'
+      ></textarea>
+      <div class="zzap-voiceHint">Tip: tap the mic on your phone keyboard to dictate. Parsing happens on your device — no connection needed.</div>
+      <button class="zzap-parseBtn" id="generate-btn" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.9L20 10.5l-6.1 1.6L12 18l-1.9-5.9L4 10.5l6.1-1.6L12 3z"/></svg>
+        Generate assignments
+      </button>
+      <div class="zzap-voiceMsg" id="voice-msg"></div>
+    </div>
+  </div>
+
+  <div class="zzap-section" id="proposals-wrap" style="display:none;">
+    <div class="zzap-sectionLabel">Review parsed assignments</div>
+    <div id="add-all-wrap"></div>
+    <div id="proposals-list"></div>
+  </div>
+
+  <div class="zzap-section">
+    <div class="zzap-sectionLabel">Add assignment</div>
+    <div class="zzap-card">
+      <div class="zzap-field">
+        <label>Person</label>
+        <select id="person-select"><option value="">Select person…</option></select>
+      </div>
+      <div class="zzap-field">
+        <label>Project</label>
+        <input id="project-input" list="zzap-projects" placeholder="New or existing — type anything" />
+        <datalist id="zzap-projects"></datalist>
+      </div>
+      <div class="zzap-field">
+        <label>Time Duration (days)</label>
+        <select id="capacity-select"><option value="">Select days…</option></select>
+      </div>
+      <div class="zzap-field">
+        <label>Phase</label>
+        <select id="phase-select"><option value="">Select phase…</option></select>
+      </div>
+      <div class="zzap-field">
+        <label>Notes (optional)</label>
+        <input id="notes-input" placeholder="Add a note" />
+      </div>
+      <label class="zzap-checkboxRow">
+        <input type="checkbox" id="carried-checkbox" />
+        Carried over from last week (unfinished work)
+      </label>
+      <button class="zzap-addBtn" id="add-btn" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        Add assignment
+      </button>
+    </div>
+  </div>
+
+  <div class="zzap-section">
+    <div class="zzap-sectionLabel">Capacity by person</div>
+    <div class="zzap-legend">
+      <span class="zzap-legendSwatch zzap-legendVacation"></span> vacation
+      <span class="zzap-legendSwatch zzap-legendCarry"></span> carried over
+    </div>
+    <div id="people-list"></div>
+  </div>
+
+  <div class="zzap-section">
+    <div class="zzap-sectionRow">
+      <div class="zzap-sectionLabel">All assignments</div>
+      <button class="zzap-clearBtn" id="clear-all-btn" style="display:none;">Clear all</button>
+    </div>
+    <div id="assignments-list"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================================================================ */
+  /* FIREBASE CONFIG — replace this URL with your own Firebase project */
+  /* ================================================================ */
+  // 1. Go to https://console.firebase.google.com, create a free project.
+  // 2. In the left sidebar, open "Realtime Database" and create one
+  //    (choose any region). Start in "test mode" to begin — you can
+  //    tighten the rules later (see note at the bottom of this file).
+  // 3. Copy the URL shown at the top of the Realtime Database page
+  //    (looks like https://YOUR-PROJECT-default-rtdb.firebaseio.com)
+  //    and paste it below, replacing the placeholder.
+  const FIREBASE_DATABASE_URL = "https://YOUR-PROJECT-ID-default-rtdb.firebaseio.com";
+
+  const ASSIGNMENTS_PATH = "zzapResourcing/assignments";
+  const RESET_PATH = "zzapResourcing/weekResetPeriod";
+
+  async function fbGet(path) {
+    const res = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`);
+    if (!res.ok) throw new Error(`Firebase GET ${res.status}: ${res.statusText}`);
+    return res.json(); // null if the path has never been written
+  }
+
+  async function fbSet(path, value) {
+    const res = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value)
+    });
+    if (!res.ok) throw new Error(`Firebase PUT ${res.status}: ${res.statusText}`);
+    return res.json();
+  }
+
+  function storageConfigured() {
+    return FIREBASE_DATABASE_URL.indexOf("YOUR-PROJECT-ID") === -1;
+  }
+
+  /* ---------------- App constants (unchanged from the Claude version) ---------------- */
+
+  const BUILD_STAMP = "Build 2026-07-22 · v1-standalone";
+
+  const STANDARD_PEOPLE = [
+    "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark",
+    "Loren", "Paul", "Matt", "Anis", "Kaley",
+    "Cassie", "Kyle", "Maria", "Lisa", "Ishaan",
+    "Robert", "Marco", "Melanie", "Unassigned"
+  ];
+  const PINNED_BOTTOM = ["Joe", "Adam", "Zahra", "Mark", "Cassie"];
+  const PHASES = ["Proposal", "Schematic", "Design Development", "Permit", "Tender", "Construction", "Closeout", "CA", "Vacation"];
+  const STANDARD_PROJECTS = ["Vacation"];
+  const PRIORITIES = ["Low", "Normal", "High", "Urgent"];
+  const CAPACITIES = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+  const DAYS_PER_WEEK = 5;
+  const SCALE_MAX = 7.5;
+  const TICKS = [];
+  for (let t = 0.5; t < SCALE_MAX; t += 0.5) TICKS.push(t);
+
+  const ICONS = {
+    trash: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
+    alert: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+    check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+  };
+
+  function makeId() {
+    return "a-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function describeError(e) {
+    if (!e) return "Unknown error";
+    if (typeof e === "string") return e;
+    if (e.message) return String(e.message);
+    try {
+      const s = JSON.stringify(e);
+      return s && s !== "{}" ? s : String(e);
+    } catch (err) {
+      return String(e);
+    }
+  }
+
+  function statusFor(totalDays) {
+    if (totalDays > 6) return { label: "Severe", color: "var(--severe)" };
+    if (totalDays > 5) return { label: "Conflict", color: "var(--conflict)" };
+    if (totalDays > 4) return { label: "Near capacity", color: "var(--near)" };
+    return { label: "Available", color: "var(--available)" };
+  }
+
+  function daysLabel(days) {
+    const rounded = Math.round(days * 2) / 2;
+    const label = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+    return label + "d";
+  }
+
+  function getCurrentWeekPeriodKey(now) {
+    now = now || new Date();
+    const day = now.getDay();
+    const daysSinceThursday = (day - 4 + 7) % 7;
+    const periodStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysSinceThursday);
+    const y = periodStart.getFullYear();
+    const m = String(periodStart.getMonth() + 1).padStart(2, "0");
+    const d = String(periodStart.getDate()).padStart(2, "0");
+    return y + "-" + m + "-" + d;
+  }
+
+  function formatWeekLabel(periodKey) {
+    if (!periodKey) return "";
+    const parts = periodKey.split("-").map(Number);
+    const thursday = new Date(parts[0], parts[1] - 1, parts[2]);
+    const monday = new Date(thursday.getFullYear(), thursday.getMonth(), thursday.getDate() + 4);
+    return monday.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+
+  /* ---------------- Offline parser (unchanged logic, plain JS) ---------------- */
+
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    let prev = new Array(n + 1), curr = new Array(n + 1);
+    for (let j = 0; j <= n; j++) prev[j] = j;
+    for (let i = 1; i <= m; i++) {
+      curr[0] = i;
+      for (j = 1; j <= n; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+      }
+      const tmp = prev; prev = curr; curr = tmp;
+    }
+    return prev[n];
+  }
+
+  function nameDistanceOk(a, b) {
+    a = a.toLowerCase(); b = b.toLowerCase();
+    if (a === b) return 0;
+    const d = levenshtein(a, b);
+    const maxLen = Math.max(a.length, b.length);
+    if (maxLen <= 3) return null;
+    if (maxLen <= 5 && d <= 1) return d;
+    if (maxLen > 5 && d <= 2) return d;
+    return null;
+  }
+
+  function cleanToken(t) {
+    return t.replace(/^[^a-zA-Z0-9']+|[^a-zA-Z0-9'%]+$/g, "");
+  }
+
+  function findPeopleMentions(tokens, people) {
+    const entries = people.map(function (person) {
+      const parts = person.split(/\s+/);
+      return { person: person, first: parts[0], last: parts.slice(1).join(" "), full: person };
+    });
+    const mentions = [];
+    let i = 0;
+    while (i < tokens.length) {
+      const t1 = cleanToken(tokens[i]);
+      const t2 = i + 1 < tokens.length ? cleanToken(tokens[i + 1]) : null;
+      let best = null;
+      if (t1.length >= 3) {
+        if (t2 && t2.length >= 2) {
+          const bigram = t1 + " " + t2;
+          for (let e1 = 0; e1 < entries.length; e1++) {
+            const d = nameDistanceOk(bigram, entries[e1].full);
+            if (d !== null && (!best || d < best.d || (d === best.d && best.span < 2))) {
+              best = { person: entries[e1].person, span: 2, d: d };
+            }
+          }
+        }
+        if (!best || best.d > 0) {
+          for (let e2 = 0; e2 < entries.length; e2++) {
+            const df = nameDistanceOk(t1, entries[e2].first);
+            if (df !== null && (!best || df < best.d)) best = { person: entries[e2].person, span: 1, d: df };
+            if (entries[e2].last) {
+              const dl = nameDistanceOk(t1, entries[e2].last);
+              if (dl !== null && (!best || dl < best.d)) best = { person: entries[e2].person, span: 1, d: dl };
+            }
+          }
+        }
+      }
+      if (best) {
+        mentions.push({ start: i, end: i + best.span, person: best.person });
+        i += best.span;
+      } else {
+        i += 1;
+      }
+    }
+    return mentions;
+  }
+
+  const CONNECTORS = { and: 1, "&": 1, plus: 1, ",": 1 };
+
+  function groupMentions(tokens, mentions) {
+    const groups = [];
+    for (let m = 0; m < mentions.length; m++) {
+      const mm = mentions[m];
+      const g = groups[groups.length - 1];
+      if (g) {
+        const between = tokens.slice(g.end, mm.start).map(function (tk) { return cleanToken(tk).toLowerCase(); }).filter(Boolean);
+        const onlyConnectors = between.every(function (tk) { return CONNECTORS[tk]; }) &&
+          tokens.slice(g.end, mm.start).join(" ").length <= 12;
+        if (onlyConnectors) {
+          g.people.push(mm.person);
+          g.end = mm.end;
+          continue;
+        }
+      }
+      groups.push({ people: [mm.person], start: mm.start, end: mm.end });
+    }
+    return groups;
+  }
+
+  const NUM_WORDS = { ten: 10, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100 };
+
+  function extractCapacity(seg) {
+    let cap = null, s = seg, m;
+    m = s.match(/(?:\b(?:at|for)\s+)?\bhalf\s*(?:a\s*)?day\b/i);
+    if (m) {
+      cap = 0.5;
+      s = s.replace(m[0], " ");
+    } else {
+      m = s.match(/(?:\b(?:at|for)\s+)?\b(\d+(?:\.\d+)?)\s*days?\b/i);
+      if (m) {
+        cap = parseFloat(m[1]);
+        s = s.replace(m[0], " ");
+      } else {
+        m = s.match(/(?:\b(?:at|for)\s+)?\b(a|one|two|three|four|five)\s+days?\b/i);
+        if (m) {
+          const dmap = { a: 1, one: 1, two: 2, three: 3, four: 4, five: 5 };
+          cap = dmap[m[1].toLowerCase()];
+          s = s.replace(m[0], " ");
+        } else {
+          m = s.match(/(?:\b(?:at|for)\s+)?(\d{1,3})\s*(?:%|percent\b|per\s*cent\b)/i);
+          if (m) {
+            cap = parseInt(m[1], 10) / 20;
+            s = s.replace(m[0], " ");
+          } else {
+            m = s.match(/(?:\b(?:at|for)\s+)?\b(one\s+hundred|ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred)\s*(?:%|percent\b|per\s*cent\b)/i);
+            if (m) {
+              const key = m[1].toLowerCase().replace(/\s+/g, " ");
+              const pct = key === "one hundred" ? 100 : (NUM_WORDS[key] || null);
+              if (pct != null) cap = pct / 20;
+              s = s.replace(m[0], " ");
+            } else if (/\bfull\s*(?:time|week)?\b/i.test(s)) {
+              cap = 5;
+              s = s.replace(/\bfull\s*(?:time|week)?\b/i, " ");
+            } else if (/\bhalf\s*(?:time|a?\s*week)?\b/i.test(s)) {
+              cap = 2.5;
+              s = s.replace(/\bhalf\s*(?:time|a?\s*week)?\b/i, " ");
+            }
+          }
+        }
+      }
+    }
+    if (cap != null) cap = Math.min(DAYS_PER_WEEK, Math.max(0.5, Math.round(cap * 2) / 2));
+    return { cap: cap, rest: s };
+  }
+
+  function extractCapacityAndPhase(segText) {
+    let s = segText;
+    let atomicCap = null, atomicPhase = null;
+    let m = s.match(/\bhalf\s*(?:a\s*)?days?\s+off\b/i);
+    if (m) {
+      atomicCap = 0.5; atomicPhase = "Vacation";
+      s = s.replace(m[0], " ");
+    } else {
+      m = s.match(/\b(\d+(?:\.\d+)?)\s*days?\s+off\b/i);
+      if (m) {
+        atomicCap = parseFloat(m[1]); atomicPhase = "Vacation";
+        s = s.replace(m[0], " ");
+      } else {
+        m = s.match(/\b(a|one|two|three|four|five)\s+days?\s+off\b/i);
+        if (m) {
+          const dmap = { a: 1, one: 1, two: 2, three: 3, four: 4, five: 5 };
+          atomicCap = dmap[m[1].toLowerCase()]; atomicPhase = "Vacation";
+          s = s.replace(m[0], " ");
+        }
+      }
+    }
+    const capRes = atomicCap != null ? { cap: atomicCap, rest: s } : extractCapacity(s);
+    const phaseRes = atomicPhase != null ? { phase: atomicPhase, rest: capRes.rest } : extractPhase(capRes.rest);
+    return { cap: capRes.cap, phase: phaseRes.phase, rest: phaseRes.rest };
+  }
+
+  const PHASE_SYNONYMS = [
+    { phase: "Vacation", patterns: ["vacation", "time off", "pto", "day off", "days off", "holiday", "out of office", "ooo"] },
+    { phase: "Design Development", patterns: ["design development", "dd"] },
+    { phase: "Schematic", patterns: ["schematic design", "schematics", "schematic", "sd"] },
+    { phase: "CA", patterns: ["contract administration", "contract admin", "site review", "ca"] },
+    { phase: "Closeout", patterns: ["closeout", "close out", "close-out"] },
+    { phase: "Construction", patterns: ["construction documents", "working drawings", "construction", "cds", "cd"] },
+    { phase: "Permit", patterns: ["permitting", "permit"] },
+    { phase: "Tender", patterns: ["tendering", "tender", "bidding", "bid"] },
+    { phase: "Proposal", patterns: ["proposal", "rfp", "pursuit", "fee letter"] }
+  ];
+
+  const FUZZY_PHASE_WORDS = [
+    ["vacation", "Vacation"],
+    ["schematic", "Schematic"], ["permit", "Permit"], ["tender", "Tender"],
+    ["construction", "Construction"], ["closeout", "Closeout"], ["proposal", "Proposal"]
+  ];
+
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function extractPhase(seg) {
+    let s = seg;
+    for (let i = 0; i < PHASE_SYNONYMS.length; i++) {
+      const patterns = PHASE_SYNONYMS[i].patterns;
+      for (let j = 0; j < patterns.length; j++) {
+        const re = new RegExp("\\b(?:for|in|during|doing|on)?\\s*\\b" + escapeRegExp(patterns[j]) + "\\b", "i");
+        const m = s.match(re);
+        if (m) return { phase: PHASE_SYNONYMS[i].phase, rest: s.replace(m[0], " ") };
+      }
+    }
+    const words = s.split(/\s+/);
+    for (let w = 0; w < words.length; w++) {
+      const word = cleanToken(words[w]).toLowerCase();
+      if (word.length < 5) continue;
+      for (let f = 0; f < FUZZY_PHASE_WORDS.length; f++) {
+        if (levenshtein(word, FUZZY_PHASE_WORDS[f][0]) <= 1) {
+          const rest = words.filter(function (_, idx) { return idx !== w; }).join(" ");
+          return { phase: FUZZY_PHASE_WORDS[f][1], rest: rest };
+        }
+      }
+    }
+    return { phase: null, rest: s };
+  }
+
+  const EDGE_STOPWORDS = {};
+  ["put", "puts", "assign", "assigned", "add", "added", "give", "gets", "get", "goes",
+   "needs", "need", "is", "are", "be", "will", "should", "can", "please", "also", "then",
+   "on", "onto", "for", "to", "at", "the", "a", "an", "this", "that", "these", "those",
+   "week", "next", "his", "her", "their", "them", "him", "each", "of", "in", "and", "&",
+   "doing", "working", "work", "with", "spend", "spending", "time", "help", "helping",
+   "project", "job", "file", "pursuit", "new", "phase", "up", "some", "it", ","
+  ].forEach(function (w) { EDGE_STOPWORDS[w] = true; });
+
+  function extractProject(seg) {
+    let words = seg.split(/\s+/).map(function (w) { return w.trim(); }).filter(Boolean);
+    while (words.length && EDGE_STOPWORDS[cleanToken(words[0]).toLowerCase()]) words.shift();
+    while (words.length && EDGE_STOPWORDS[cleanToken(words[words.length - 1]).toLowerCase()]) words.pop();
+    return words.join(" ").replace(/\s+/g, " ").replace(/^[,.;:]+|[,.;:]+$/g, "").trim();
+  }
+
+  function parseDescription(text, people) {
+    const rawTokens = text.split(/\s+/).filter(Boolean);
+    const mentions = findPeopleMentions(rawTokens, people);
+    const groups = groupMentions(rawTokens, mentions);
+    const proposals = [];
+
+    if (groups.length === 0) {
+      const r = extractCapacityAndPhase(text);
+      let project = extractProject(r.rest);
+      if (r.phase === "Vacation" && !project) project = "Vacation";
+      proposals.push({ pid: makeId(), person: "", project: project, capacity: r.cap != null ? String(r.cap) : "", phase: r.phase || "" });
+      return proposals;
+    }
+
+    for (let g = 0; g < groups.length; g++) {
+      const group = groups[g];
+      const segStart = group.end;
+      const segEnd = g + 1 < groups.length ? groups[g + 1].start : rawTokens.length;
+      let segTokens = rawTokens.slice(segStart, segEnd);
+      if (g === 0 && group.start > 0) {
+        segTokens = rawTokens.slice(0, group.start).concat(segTokens);
+      }
+      const segText = segTokens.join(" ");
+      const r = extractCapacityAndPhase(segText);
+      let project = extractProject(r.rest);
+      if (r.phase === "Vacation" && !project) project = "Vacation";
+      for (let p = 0; p < group.people.length; p++) {
+        proposals.push({
+          pid: makeId(),
+          person: group.people[p],
+          project: project,
+          capacity: r.cap != null ? String(r.cap) : "",
+          phase: r.phase || ""
+        });
+      }
+    }
+    return proposals;
+  }
+
+  /* ---------------- App state & rendering ---------------- */
+
+  const state = {
+    assignments: [],
+    loading: true,
+    status: "Loading…",
+    statusKind: "idle",
+    weekPeriod: null,
+    proposals: [],
+    lastErrorDetail: ""
+  };
+
+  const el = {
+    statusPill: document.getElementById("status-pill"),
+    refreshBtn: document.getElementById("refresh-btn"),
+    weekLabel: document.getElementById("week-label"),
+    buildStamp: document.getElementById("build-stamp"),
+    errorDetail: document.getElementById("error-detail"),
+    errorDetailText: document.getElementById("error-detail-text"),
+    retryBtn: document.getElementById("retry-btn"),
+    transcriptBox: document.getElementById("transcript-box"),
+    generateBtn: document.getElementById("generate-btn"),
+    voiceMsg: document.getElementById("voice-msg"),
+    proposalsWrap: document.getElementById("proposals-wrap"),
+    addAllWrap: document.getElementById("add-all-wrap"),
+    proposalsList: document.getElementById("proposals-list"),
+    personSelect: document.getElementById("person-select"),
+    projectInput: document.getElementById("project-input"),
+    capacitySelect: document.getElementById("capacity-select"),
+    phaseSelect: document.getElementById("phase-select"),
+    notesInput: document.getElementById("notes-input"),
+    carriedCheckbox: document.getElementById("carried-checkbox"),
+    addBtn: document.getElementById("add-btn"),
+    peopleList: document.getElementById("people-list"),
+    assignmentsList: document.getElementById("assignments-list"),
+    projectDatalist: document.getElementById("zzap-projects"),
+    clearAllBtn: document.getElementById("clear-all-btn")
+  };
+
+  el.buildStamp.textContent = BUILD_STAMP;
+
+  function allPeople() {
+    const set = {};
+    STANDARD_PEOPLE.forEach(function (p) { set[p] = true; });
+    state.assignments.forEach(function (a) { if (a.person) set[a.person] = true; });
+    return Object.keys(set).sort(function (a, b) { return a.localeCompare(b); });
+  }
+
+  function peopleWithLoad() {
+    const people = allPeople();
+    const pinnedSet = {};
+    PINNED_BOTTOM.forEach(function (p) { pinnedSet[p] = true; });
+    const rest = people.filter(function (p) { return !pinnedSet[p]; });
+    const pinned = people.filter(function (p) { return pinnedSet[p]; })
+      .sort(function (a, b) { return PINNED_BOTTOM.indexOf(a) - PINNED_BOTTOM.indexOf(b); });
+    return rest.concat(pinned);
+  }
+
+  function totalsByPerson() {
+    const t = {};
+    state.assignments.forEach(function (a) { t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0); });
+    return t;
+  }
+
+  function vacationTotalsByPerson() {
+    const t = {};
+    state.assignments.forEach(function (a) {
+      if (a.phase === "Vacation" && !a.carriedOver) t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0);
+    });
+    return t;
+  }
+
+  function carryOverTotalsByPerson() {
+    const t = {};
+    state.assignments.forEach(function (a) {
+      if (a.carriedOver) t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0);
+    });
+    return t;
+  }
+
+  function projectSuggestions() {
+    const seen = {}; const out = [];
+    STANDARD_PROJECTS.forEach(function (p) { if (!seen[p]) { seen[p] = true; out.push(p); } });
+    state.assignments.forEach(function (a) {
+      if (a.project && !seen[a.project]) { seen[a.project] = true; out.push(a.project); }
+    });
+    return out;
+  }
+
+  function sortedAssignments() {
+    return state.assignments.slice().sort(function (a, b) { return a.person.localeCompare(b.person); });
+  }
+
+  function proposalReady(p) {
+    return !!(p.person && p.project && p.project.trim() && p.capacity && p.phase);
+  }
+
+  /* ---- render pieces ---- */
+
+  function renderStatus() {
+    el.statusPill.textContent = state.status;
+    el.statusPill.className = "zzap-statusPill" + (state.statusKind === "idle" ? "" : " " + state.statusKind);
+  }
+
+  function renderWeekLabel() {
+    if (state.weekPeriod) {
+      el.weekLabel.style.display = "";
+      el.weekLabel.textContent = "Week of Mon, " + formatWeekLabel(state.weekPeriod);
+    } else {
+      el.weekLabel.style.display = "none";
+    }
+  }
+
+  function renderErrorDetail() {
+    if (state.lastErrorDetail) {
+      el.errorDetail.style.display = "";
+      el.errorDetailText.textContent = "Storage error detail: " + state.lastErrorDetail;
+    } else {
+      el.errorDetail.style.display = "none";
+    }
+  }
+
+  function setStatus(text, kind) {
+    state.status = text;
+    state.statusKind = kind;
+    renderStatus();
+    clearTimeout(setStatus._t);
+    setStatus._t = setTimeout(function () {
+      state.statusKind = "idle";
+      renderStatus();
+    }, 2200);
+  }
+
+  function setErrorDetail(text) {
+    state.lastErrorDetail = text || "";
+    renderErrorDetail();
+  }
+
+  function rebuildPersonSelect() {
+    const current = el.personSelect.value;
+    const people = allPeople();
+    let html = '<option value="">Select person…</option>';
+    for (let i = 0; i < people.length; i++) {
+      html += '<option value="' + escapeHtml(people[i]) + '">' + escapeHtml(people[i]) + "</option>";
+    }
+    el.personSelect.innerHTML = html;
+    el.personSelect.value = people.indexOf(current) !== -1 ? current : "";
+  }
+
+  function rebuildProjectDatalist() {
+    const suggestions = projectSuggestions();
+    let html = "";
+    for (let i = 0; i < suggestions.length; i++) {
+      html += '<option value="' + escapeHtml(suggestions[i]) + '"></option>';
+    }
+    el.projectDatalist.innerHTML = html;
+  }
+
+  function renderPeopleBars() {
+    const totals = totalsByPerson();
+    const vacTotals = vacationTotalsByPerson();
+    const carryTotals = carryOverTotalsByPerson();
+    const people = peopleWithLoad();
+    let html = "";
+    for (let i = 0; i < people.length; i++) {
+      const person = people[i];
+      const total = Math.round((totals[person] || 0) * 2) / 2;
+      const vacation = Math.round((vacTotals[person] || 0) * 2) / 2;
+      const carryOver = Math.round((carryTotals[person] || 0) * 2) / 2;
+      const workOnly = Math.max(0, total - vacation - carryOver);
+      const st = statusFor(total);
+      const workPct = (Math.min(workOnly, SCALE_MAX) / SCALE_MAX) * 100;
+      const workPlusVacationPct = (Math.min(workOnly + vacation, SCALE_MAX) / SCALE_MAX) * 100;
+      const vacationPct = Math.max(0, workPlusVacationPct - workPct);
+      const totalPct = (Math.min(total, SCALE_MAX) / SCALE_MAX) * 100;
+      const carryPct = Math.max(0, totalPct - workPct - vacationPct);
+      const markPct = (DAYS_PER_WEEK / SCALE_MAX) * 100;
+      const remaining = DAYS_PER_WEEK - total;
+      let ticksHtml = "";
+      for (let tI = 0; tI < TICKS.length; tI++) {
+        ticksHtml += '<div class="zzap-tick" style="left:' + ((TICKS[tI] / SCALE_MAX) * 100) + '%"></div>';
+      }
+      html +=
+        '<div class="zzap-personRow">' +
+          '<div class="zzap-personTop">' +
+            '<div class="zzap-personName">' + escapeHtml(person) + "</div>" +
+            '<div class="zzap-personMeta"><span>' + daysLabel(total) + ' booked</span><span class="status" style="color:' + st.color + '">' + st.label + "</span></div>" +
+          "</div>" +
+          '<div class="zzap-remainingLine">' +
+            (remaining >= 0 ? daysLabel(remaining) + " remaining" : daysLabel(Math.abs(remaining)) + " over") +
+          "</div>" +
+          '<div class="zzap-track">' + ticksHtml +
+            '<div class="zzap-fill" style="width:' + workPct + '%;background:' + st.color + '"></div>' +
+            (vacation > 0 ? '<div class="zzap-fillVacation" style="left:' + workPct + '%;width:' + vacationPct + '%"></div>' : "") +
+            (carryOver > 0 ? '<div class="zzap-fillCarry" style="left:' + (workPct + vacationPct) + '%;width:' + carryPct + '%"></div>' : "") +
+            '<div class="zzap-mark100" style="left:' + markPct + '%"></div>' +
+          "</div>" +
+        "</div>";
+    }
+    el.peopleList.innerHTML = html;
+  }
+
+  function renderAssignments() {
+    const totals = totalsByPerson();
+    const rows = sortedAssignments();
+    el.clearAllBtn.style.display = rows.length > 0 ? "" : "none";
+    if (rows.length === 0) {
+      el.assignmentsList.innerHTML = '<div class="zzap-empty">' + (state.loading ? "Loading shared data…" : "Nothing here yet.") + "</div>";
+      return;
+    }
+    const people = allPeople();
+    let html = "";
+    for (let i = 0; i < rows.length; i++) {
+      const a = rows[i];
+      const total = Math.round((totals[a.person] || 0) * 2) / 2;
+      const over = total > DAYS_PER_WEEK;
+      const severe = total > 6;
+      const urgent = a.priority === "Urgent";
+      let personOptions = "";
+      for (let p = 0; p < people.length; p++) {
+        personOptions += '<option value="' + escapeHtml(people[p]) + '"' + (a.person === people[p] ? " selected" : "") + ">" + escapeHtml(people[p]) + "</option>";
+      }
+      let capOptions = "";
+      for (let c = 0; c < CAPACITIES.length; c++) {
+        capOptions += '<option value="' + CAPACITIES[c] + '"' + (Number(a.capacity) === CAPACITIES[c] ? " selected" : "") + ">" + CAPACITIES[c] + "d</option>";
+      }
+      let prOptions = "";
+      for (let pr = 0; pr < PRIORITIES.length; pr++) {
+        prOptions += '<option value="' + PRIORITIES[pr] + '"' + (a.priority === PRIORITIES[pr] ? " selected" : "") + ">" + PRIORITIES[pr] + "</option>";
+      }
+      const rowClasses = ["zzap-card", "zzap-cardRow"];
+      if (severe) rowClasses.push("severe"); else if (over) rowClasses.push("over");
+      if (urgent) rowClasses.push("urgent");
+      html +=
+        '<div class="' + rowClasses.join(" ") + '" data-id="' + a.id + '">' +
+          '<div class="zzap-cardTop">' +
+            "<div>" +
+              '<select class="zzap-cardPersonSelect" data-role="person" aria-label="Reassign person for ' + escapeHtml(a.project) + '">' + personOptions + "</select>" +
+              '<div class="zzap-cardMeta">' + escapeHtml(a.project) + " · " + escapeHtml(a.phase) + "</div>" +
+            "</div>" +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<select class="zzap-capSelect" data-role="capacity" aria-label="Capacity for ' + escapeHtml(a.person) + " on " + escapeHtml(a.project) + '">' + capOptions + "</select>" +
+              '<button class="zzap-delBtn" data-role="delete" aria-label="Delete ' + escapeHtml(a.person) + " on " + escapeHtml(a.project) + '">' + ICONS.trash + "</button>" +
+            "</div>" +
+          "</div>" +
+          (a.notes ? '<div class="zzap-cardNotes">' + escapeHtml(a.notes) + "</div>" : "") +
+          (a.carriedOver ? '<div class="zzap-carryBadge">↺ Carried over from last week</div>' : "") +
+          (over ? '<div class="zzap-warnLine">' + ICONS.alert + " Over capacity by " + daysLabel(total - DAYS_PER_WEEK) + " — adjust days above or set priority</div>" : "") +
+          '<div class="zzap-priorityRow"><label>Priority</label><select data-role="priority">' + prOptions + "</select></div>" +
+        "</div>";
+    }
+    el.assignmentsList.innerHTML = html;
+  }
+
+  function renderProposals() {
+    if (state.proposals.length === 0) {
+      el.proposalsWrap.style.display = "none";
+      el.proposalsList.innerHTML = "";
+      el.addAllWrap.innerHTML = "";
+      return;
+    }
+    el.proposalsWrap.style.display = "";
+    const readyCount = state.proposals.filter(proposalReady).length;
+    el.addAllWrap.innerHTML = readyCount > 1
+      ? '<button class="zzap-addAllBtn" id="add-all-btn">' + ICONS.check + " Add all " + readyCount + " ready</button>"
+      : "";
+    const addAllBtn = document.getElementById("add-all-btn");
+    if (addAllBtn) addAllBtn.addEventListener("click", addAllReady);
+
+    const peopleOpts = allPeople();
+    let html = "";
+    for (let i = 0; i < state.proposals.length; i++) {
+      const p = state.proposals[i];
+      const ready = proposalReady(p);
+      let personOpts = '<option value="">Person…</option>';
+      for (let pi = 0; pi < peopleOpts.length; pi++) {
+        personOpts += '<option value="' + escapeHtml(peopleOpts[pi]) + '"' + (p.person === peopleOpts[pi] ? " selected" : "") + ">" + escapeHtml(peopleOpts[pi]) + "</option>";
+      }
+      let capOpts = '<option value="">Days…</option>';
+      for (let c = 0; c < CAPACITIES.length; c++) {
+        capOpts += '<option value="' + CAPACITIES[c] + '"' + (String(p.capacity) === String(CAPACITIES[c]) ? " selected" : "") + ">" + CAPACITIES[c] + "d</option>";
+      }
+      let phaseOpts = '<option value="">Phase…</option>';
+      for (let ph = 0; ph < PHASES.length; ph++) {
+        phaseOpts += '<option value="' + PHASES[ph] + '"' + (p.phase === PHASES[ph] ? " selected" : "") + ">" + PHASES[ph] + "</option>";
+      }
+      html +=
+        '<div class="zzap-card zzap-proposal ' + (ready ? "ready" : "") + '" data-pid="' + p.pid + '">' +
+          '<div class="zzap-propGrid">' +
+            '<select data-field="person" class="' + (p.person ? "" : "missing") + '">' + personOpts + "</select>" +
+            '<select data-field="capacity" class="' + (p.capacity ? "" : "missing") + '">' + capOpts + "</select>" +
+            '<input data-field="project" class="wide ' + (p.project ? "" : "missing") + '" placeholder="Project (new or existing)" value="' + escapeHtml(p.project || "") + '" />' +
+            '<select data-field="phase" class="wide ' + (p.phase ? "" : "missing") + '">' + phaseOpts + "</select>" +
+          "</div>" +
+          '<div class="zzap-propActions">' +
+            '<button class="zzap-propAdd" data-role="prop-add"' + (ready ? "" : " disabled") + ">" + ICONS.plus + " Add</button>" +
+            '<button class="zzap-propRemove" data-role="prop-remove" aria-label="Discard this one">' + ICONS.trash + "</button>" +
+          "</div>" +
+        "</div>";
+    }
+    el.proposalsList.innerHTML = html;
+  }
+
+  function renderAll() {
+    renderStatus();
+    renderWeekLabel();
+    renderErrorDetail();
+    rebuildPersonSelect();
+    rebuildProjectDatalist();
+    renderPeopleBars();
+    renderAssignments();
+    renderProposals();
+  }
+
+  /* ---- persistence (Firebase Realtime Database via REST) ---- */
+
+  async function persist(next) {
+    state.assignments = next;
+    if (!storageConfigured()) {
+      setErrorDetail("Firebase isn't configured yet — replace FIREBASE_DATABASE_URL near the top of the <script> block with your project's database URL.");
+      setStatus("Not shared — Firebase not configured", "err");
+      renderAll();
+      return;
+    }
+    setStatus("Saving…", "idle");
+    renderAll();
+
+    const attempts = [0, 600, 1500];
+    let lastErr = null;
+    for (let i = 0; i < attempts.length; i++) {
+      if (attempts[i] > 0) {
+        setStatus("Saving… (retry " + i + "/" + (attempts.length - 1) + ")", "idle");
+        await new Promise(function (r) { setTimeout(r, attempts[i]); });
+      }
+      try {
+        await fbSet(ASSIGNMENTS_PATH, next);
+        setErrorDetail("");
+        setStatus("Saved", "ok");
+        renderAll();
+        return;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    setErrorDetail(describeError(lastErr));
+    setStatus("Save failed after retries — try again", "err");
+    renderAll();
+  }
+
+  async function load() {
+    setStatus("Loading…", "idle");
+    renderAll();
+    const currentPeriod = getCurrentWeekPeriodKey();
+
+    if (!storageConfigured()) {
+      state.assignments = [];
+      state.weekPeriod = currentPeriod;
+      setErrorDetail("Firebase isn't configured yet — replace FIREBASE_DATABASE_URL near the top of the <script> block with your project's database URL.");
+      setStatus("Not shared — Firebase not configured", "err");
+      state.loading = false;
+      renderAll();
+      return;
+    }
+
+    let loadedAssignments = [];
+    try {
+      const raw = await fbGet(ASSIGNMENTS_PATH);
+      if (raw === null) {
+        // Nothing written yet at this path — brand-new deployment.
+        loadedAssignments = [];
+        try {
+          await fbSet(ASSIGNMENTS_PATH, loadedAssignments);
+          await fbSet(RESET_PATH, currentPeriod);
+          setErrorDetail("");
+          setStatus("Up to date", "ok");
+        } catch (e2) {
+          setErrorDetail(describeError(e2));
+          setStatus("Save failed after retries — try again", "err");
+        }
+        state.assignments = loadedAssignments;
+        state.weekPeriod = currentPeriod;
+        state.loading = false;
+        renderAll();
+        return;
+      }
+      loadedAssignments = Array.isArray(raw) ? raw : [];
+      setErrorDetail("");
+    } catch (e) {
+      // A genuine fetch/network failure — Firebase URL unreachable, CORS
+      // issue, or a real outage. Keep whatever was already on screen and
+      // show the real reason rather than silently wiping the board.
+      setErrorDetail(describeError(e));
+      setStatus("Couldn't reach storage — try refresh", "err");
+      state.loading = false;
+      renderAll();
+      return;
+    }
+
+    let storedPeriod = null;
+    try {
+      storedPeriod = await fbGet(RESET_PATH);
+    } catch (e) {
+      storedPeriod = null;
+    }
+
+    if (storedPeriod !== currentPeriod) {
+      loadedAssignments = [];
+      try {
+        await fbSet(ASSIGNMENTS_PATH, loadedAssignments);
+        await fbSet(RESET_PATH, currentPeriod);
+      } catch (e) {
+        // Best effort — the next person to open it will retry.
+      }
+      setStatus("New week started — board cleared for re-entry", "ok");
+    } else {
+      setStatus("Up to date", "ok");
+    }
+
+    state.assignments = loadedAssignments;
+    state.weekPeriod = currentPeriod;
+    state.loading = false;
+    renderAll();
+  }
+
+  /* ---- actions ---- */
+
+  function updateAddButtonState() {
+    const ok = el.personSelect.value && el.projectInput.value.trim() && el.capacitySelect.value && el.phaseSelect.value;
+    el.addBtn.disabled = !ok;
+  }
+
+  function handleAdd() {
+    if (el.addBtn.disabled) return;
+    const row = {
+      id: makeId(),
+      person: el.personSelect.value,
+      project: el.projectInput.value.trim(),
+      capacity: Number(el.capacitySelect.value),
+      phase: el.phaseSelect.value,
+      priority: "Normal",
+      notes: el.notesInput.value.trim(),
+      carriedOver: !!el.carriedCheckbox.checked
+    };
+    persist(state.assignments.concat([row]));
+    el.personSelect.value = "";
+    el.projectInput.value = "";
+    el.capacitySelect.value = "";
+    el.phaseSelect.value = "";
+    el.notesInput.value = "";
+    el.carriedCheckbox.checked = false;
+    updateAddButtonState();
+  }
+
+  function handleParse() {
+    const text = el.transcriptBox.value.trim();
+    if (!text) return;
+    const parsed = parseDescription(text, allPeople());
+    state.proposals = parsed;
+    renderProposals();
+    const incomplete = parsed.filter(function (p) { return !proposalReady(p); }).length;
+    if (parsed.length === 0) {
+      el.voiceMsg.textContent = "Couldn't find anything to parse — try rephrasing.";
+    } else if (incomplete === 0) {
+      el.voiceMsg.textContent = "Found " + parsed.length + " assignment" + (parsed.length > 1 ? "s" : "") + " — review below, then add.";
+    } else {
+      el.voiceMsg.textContent = "Found " + parsed.length + " assignment" + (parsed.length > 1 ? "s" : "") + " — " + incomplete + " need" + (incomplete === 1 ? "s" : "") + " a missing field set before adding.";
+    }
+  }
+
+  function addProposalById(pid) {
+    let p = null;
+    for (let i = 0; i < state.proposals.length; i++) if (state.proposals[i].pid === pid) p = state.proposals[i];
+    if (!p || !proposalReady(p)) return;
+    const row = { id: makeId(), person: p.person, project: p.project.trim(), capacity: Number(p.capacity), phase: p.phase, priority: "Normal", notes: "", carriedOver: false };
+    state.proposals = state.proposals.filter(function (x) { return x.pid !== pid; });
+    persist(state.assignments.concat([row]));
+  }
+
+  function removeProposalById(pid) {
+    state.proposals = state.proposals.filter(function (x) { return x.pid !== pid; });
+    renderProposals();
+  }
+
+  function addAllReady() {
+    const ready = state.proposals.filter(proposalReady);
+    if (!ready.length) return;
+    const rows = ready.map(function (p) {
+      return { id: makeId(), person: p.person, project: p.project.trim(), capacity: Number(p.capacity), phase: p.phase, priority: "Normal", notes: "", carriedOver: false };
+    });
+    state.proposals = state.proposals.filter(function (p) { return !proposalReady(p); });
+    persist(state.assignments.concat(rows));
+    el.transcriptBox.value = "";
+    el.voiceMsg.textContent = "";
+    el.generateBtn.disabled = true;
+  }
+
+  function updateProposalCardReadyState(card, p) {
+    const ready = proposalReady(p);
+    card.classList.toggle("ready", ready);
+    const addBtn = card.querySelector('[data-role="prop-add"]');
+    if (addBtn) addBtn.disabled = !ready;
+    card.querySelectorAll("[data-field]").forEach(function (fieldEl) {
+      const val = p[fieldEl.dataset.field];
+      fieldEl.classList.toggle("missing", !val);
+    });
+  }
+
+  let confirmClear = false;
+  let confirmClearTimer = null;
+  function handleClearAllClick() {
+    if (state.assignments.length === 0) return;
+    if (!confirmClear) {
+      confirmClear = true;
+      el.clearAllBtn.textContent = "Tap again to confirm";
+      el.clearAllBtn.classList.add("confirm");
+      clearTimeout(confirmClearTimer);
+      confirmClearTimer = setTimeout(function () {
+        confirmClear = false;
+        el.clearAllBtn.textContent = "Clear all";
+        el.clearAllBtn.classList.remove("confirm");
+      }, 4000);
+      return;
+    }
+    confirmClear = false;
+    el.clearAllBtn.textContent = "Clear all";
+    el.clearAllBtn.classList.remove("confirm");
+    clearTimeout(confirmClearTimer);
+    persist([]);
+  }
+
+  function populateStaticSelects() {
+    let capHtml = '<option value="">Select days…</option>';
+    for (let c = 0; c < CAPACITIES.length; c++) capHtml += '<option value="' + CAPACITIES[c] + '">' + CAPACITIES[c] + "d</option>";
+    el.capacitySelect.innerHTML = capHtml;
+
+    let phaseHtml = '<option value="">Select phase…</option>';
+    for (let p = 0; p < PHASES.length; p++) phaseHtml += '<option value="' + PHASES[p] + '">' + PHASES[p] + "</option>";
+    el.phaseSelect.innerHTML = phaseHtml;
+  }
+
+  /* ---- event wiring ---- */
+
+  el.refreshBtn.addEventListener("click", load);
+  el.retryBtn.addEventListener("click", function () { persist(state.assignments); });
+  el.transcriptBox.addEventListener("input", function () {
+    el.generateBtn.disabled = !el.transcriptBox.value.trim();
+  });
+  el.generateBtn.addEventListener("click", handleParse);
+  el.personSelect.addEventListener("change", updateAddButtonState);
+  el.projectInput.addEventListener("input", updateAddButtonState);
+  el.capacitySelect.addEventListener("change", updateAddButtonState);
+  el.phaseSelect.addEventListener("change", updateAddButtonState);
+  el.addBtn.addEventListener("click", handleAdd);
+  el.clearAllBtn.addEventListener("click", handleClearAllClick);
+
+  el.assignmentsList.addEventListener("click", function (e) {
+    const delBtn = e.target.closest('[data-role="delete"]');
+    if (delBtn) {
+      const id = delBtn.closest("[data-id]").dataset.id;
+      persist(state.assignments.filter(function (a) { return a.id !== id; }));
+    }
+  });
+  el.assignmentsList.addEventListener("change", function (e) {
+    const card = e.target.closest("[data-id]");
+    if (!card) return;
+    const id = card.dataset.id;
+    if (e.target.dataset.role === "capacity") {
+      persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { capacity: Number(e.target.value) }) : a; }));
+    } else if (e.target.dataset.role === "priority") {
+      persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { priority: e.target.value }) : a; }));
+    } else if (e.target.dataset.role === "person") {
+      persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { person: e.target.value }) : a; }));
+    }
+  });
+
+  el.proposalsList.addEventListener("input", function (e) {
+    const field = e.target.dataset.field;
+    if (!field) return;
+    const card = e.target.closest("[data-pid]");
+    const pid = card.dataset.pid;
+    let p = null;
+    for (let i = 0; i < state.proposals.length; i++) if (state.proposals[i].pid === pid) p = state.proposals[i];
+    if (!p) return;
+    p[field] = e.target.value;
+    updateProposalCardReadyState(card, p);
+  });
+  el.proposalsList.addEventListener("click", function (e) {
+    const addBtn = e.target.closest('[data-role="prop-add"]');
+    if (addBtn) { addProposalById(addBtn.closest("[data-pid]").dataset.pid); return; }
+    const rmBtn = e.target.closest('[data-role="prop-remove"]');
+    if (rmBtn) { removeProposalById(rmBtn.closest("[data-pid]").dataset.pid); }
+  });
+
+  /* ---- boot ---- */
+
+  try {
+    populateStaticSelects();
+    renderAll();
+    load();
+  } catch (bootErr) {
+    document.body.innerHTML =
+      '<div style="margin:16px;padding:14px;border:1px solid #C0392B;border-radius:8px;background:#FBEEEC;color:#7A2020;font-family:-apple-system,sans-serif;font-size:13px;">' +
+      "<strong>Something went wrong loading the app.</strong><br/>Error: " + escapeHtml(bootErr.message || String(bootErr)) +
+      "</div>";
+  }
+})();
+</script>
+
+</body>
+</html>
