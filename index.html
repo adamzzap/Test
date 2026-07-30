@@ -109,9 +109,6 @@
     font-size:11px; font-weight:600; color:var(--ink-soft); background:transparent;
     border:1px solid var(--line); border-radius:5px; padding:3px 8px; margin-bottom:8px;
   }
-  .zzap-clearBtn.confirm { color:#fff; background:var(--conflict); border-color:var(--conflict); }
-  .zzap-clearBtn:disabled { opacity:0.45; }
-  .zzap-clearBtn.offweek { border-color:var(--near); color:var(--near); }
   .zzap-card {
     background:var(--surface); border:1px solid var(--line); border-radius:8px;
     padding:12px; margin-bottom:8px;
@@ -290,7 +287,7 @@
       <div class="zzap-wordmark">
         <b>zzap</b>
         <span>Weekly Resourcing</span>
-        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v15-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v16-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
@@ -415,7 +412,6 @@
   <div class="zzap-section">
     <div class="zzap-sectionRow">
       <div class="zzap-sectionLabel">All assignments</div>
-      <button class="zzap-clearBtn" id="clear-all-btn" style="display:none;">Clear all (non-recurring)</button>
     </div>
     <div class="zzap-filterRow" id="filter-row" style="display:none;">
       <label for="filter-person">Filter</label>
@@ -491,7 +487,7 @@
  
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
  
-  const BUILD_STAMP = "Build 2026-07-22 · v15-standalone";
+  const BUILD_STAMP = "Build 2026-07-22 · v16-standalone";
  
   const STANDARD_PEOPLE = [
     "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark", "Angela",
@@ -927,8 +923,7 @@
     peopleList: document.getElementById("people-list"),
     addBtn: document.getElementById("add-btn"),
     assignmentsList: document.getElementById("assignments-list"),
-    projectDatalist: document.getElementById("zzap-projects"),
-    clearAllBtn: document.getElementById("clear-all-btn")
+    projectDatalist: document.getElementById("zzap-projects")
   };
  
   el.buildStamp.textContent = BUILD_STAMP;
@@ -1149,24 +1144,7 @@
     const rows = state.filterPerson
       ? allRows.filter(function (a) { return a.person === state.filterPerson; })
       : allRows;
-    el.clearAllBtn.style.display = allRows.length > 0 ? "" : "none";
     el.filterRow.style.display = allRows.length > 0 ? "" : "none";
-    // Reflect exactly what the button will do, so it never looks inert.
-    const clearable = allRows.filter(function (a) { return !a.recurring; }).length;
-    el.clearAllBtn.disabled = clearable === 0;
-    el.clearAllBtn.title = clearable === 0
-      ? "Nothing to clear — every assignment in this week is marked recurring"
-      : "Clears " + clearable + " non-recurring assignment" + (clearable === 1 ? "" : "s") +
-        " in the week of Mon, " + formatWeekLabel(state.viewWeek) + " only. Other weeks are not affected.";
-    if (!confirmClear) {
-      const otherWeek = state.viewWeek !== state.weekPeriod;
-      el.clearAllBtn.textContent = clearable === 0
-        ? "Nothing to clear"
-        : otherWeek
-          ? "Clear " + clearable + " in " + formatWeekLabel(state.viewWeek)
-          : "Clear " + clearable + " (keep recurring)";
-      el.clearAllBtn.classList.toggle("offweek", otherWeek && clearable > 0);
-    }
     if (rows.length === 0) {
       el.assignmentsList.innerHTML = '<div class="zzap-empty">' +
         (state.loading ? "Loading shared data…"
@@ -1542,40 +1520,6 @@
     });
   }
  
-  let confirmClear = false;
-  let confirmClearTimer = null;
-  function clearableCount() {
-    return weekAssignments().filter(function (a) { return !a.recurring; }).length;
-  }
- 
-  function handleClearAllClick() {
-    if (clearableCount() === 0) {
-      setStatus("Nothing to clear — all recurring", "err");
-      return;
-    }
-    if (!confirmClear) {
-      confirmClear = true;
-      el.clearAllBtn.textContent = "Tap again — clears " + clearableCount() + " in " + formatWeekLabel(state.viewWeek);
-      el.clearAllBtn.classList.add("confirm");
-      clearTimeout(confirmClearTimer);
-      confirmClearTimer = setTimeout(function () {
-        confirmClear = false;
-        el.clearAllBtn.classList.remove("confirm");
-        renderAssignments();
-      }, 4000);
-      return;
-    }
-    confirmClear = false;
-    el.clearAllBtn.classList.remove("confirm");
-    clearTimeout(confirmClearTimer);
-    // Clears only NON-recurring rows in the week being viewed. Recurring
-    // rows and other weeks are left untouched.
-    const viewing = state.viewWeek;
-    persist(state.assignments.filter(function (a) {
-      return a.week !== viewing || a.recurring;
-    }));
-  }
- 
   function populateStaticSelects() {
     let capHtml = '<option value="">Select days…</option>';
     for (let c = 0; c < CAPACITIES.length; c++) capHtml += '<option value="' + CAPACITIES[c] + '">' + CAPACITIES[c] + "d</option>";
@@ -1592,8 +1536,6 @@
     state.viewWeek = periodKey;
     state.proposals = [];
     el.voiceMsg.textContent = "";
-    confirmClear = false;
-    el.clearAllBtn.classList.remove("confirm");
     renderAll();
   }
  
@@ -1658,7 +1600,6 @@
   el.capacitySelect.addEventListener("change", updateAddButtonState);
   el.phaseSelect.addEventListener("change", updateAddButtonState);
   el.addBtn.addEventListener("click", handleAdd);
-  el.clearAllBtn.addEventListener("click", handleClearAllClick);
  
   el.assignmentsList.addEventListener("click", function (e) {
     const delBtn = e.target.closest('[data-role="delete"]');
@@ -1717,4 +1658,3 @@
  
 </body>
 </html>
- 
