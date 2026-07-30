@@ -13,6 +13,7 @@
   }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background:var(--paper); }
+  .zzap-main { }
   .zzap-app {
     max-width:480px; margin:0 auto; min-height:100vh;
     background:var(--paper); color:var(--ink);
@@ -36,6 +37,28 @@
   .zzap-wordmark span { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); }
   .zzap-build { font-size:9px !important; letter-spacing:0.04em !important; text-transform:none !important; color:var(--ink-soft); opacity:0.7; margin-top:2px; }
   .zzap-weekLabel { font-size:12px !important; letter-spacing:0.02em !important; text-transform:none !important; color:var(--ink); font-weight:600; margin-top:3px; }
+  .zzap-weekNav {
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:8px 12px; border-top:1px solid var(--line); background:var(--surface);
+  }
+  .zzap-weekNavBtn {
+    width:40px; height:40px; flex-shrink:0; border:1px solid var(--line); border-radius:8px;
+    background:var(--surface); color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .zzap-weekNavBtn:active { background:var(--accent-soft); }
+  .zzap-weekNavCenter { flex:1; text-align:center; line-height:1.25; }
+  .zzap-weekNavLabel { font-size:14px; font-weight:700; color:var(--ink); }
+  .zzap-weekNavSub { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); font-weight:600; margin-top:1px; }
+  .zzap-futureBanner {
+    display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;
+    font-size:11px; font-weight:700; color:#5B4A16; background:#FBF3DC;
+    padding:7px 16px; border-top:1px solid var(--line);
+  }
+  .zzap-todayBtn {
+    font-size:11px; font-weight:700; color:#fff; background:var(--near);
+    border:none; border-radius:5px; padding:4px 10px; flex-shrink:0;
+  }
   .zzap-headerNote {
     font-size:10px; font-weight:700; letter-spacing:0.02em; line-height:1.45;
     color:var(--accent); background:var(--accent-soft);
@@ -59,21 +82,39 @@
     width:38px; height:38px; border-radius:6px; display:flex; align-items:center; justify-content:center;
   }
   .zzap-iconBtn:active { background:var(--accent-soft); }
-  .zzap-section { padding:18px 16px 4px; }
+  .zzap-section { padding:14px 16px 2px; }
   .zzap-sectionLabel {
     font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft);
-    margin-bottom:10px; font-weight:600;
+    margin-bottom:8px; font-weight:600;
   }
-  .zzap-sectionRow { display:flex; align-items:center; justify-content:space-between; }
+  .zzap-sectionRow { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .zzap-filterRow { display:flex; align-items:center; gap:8px; margin:-2px 0 10px; }
+  .zzap-filterRow label { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); font-weight:600; flex-shrink:0; }
+  .zzap-filterRow select {
+    flex:1; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 8px;
+    font-size:15px; background:var(--surface); color:var(--ink);
+  }
+  .zzap-recurBadge {
+    display:inline-block; font-size:11px; font-weight:600; color:var(--accent);
+    background:var(--accent-soft); border:1px solid var(--accent); border-radius:4px;
+    padding:2px 6px; margin-top:8px; margin-right:6px;
+  }
+  .zzap-recurToggle {
+    display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-soft);
+    margin-left:auto; cursor:pointer; white-space:nowrap;
+  }
+  .zzap-recurToggle input { width:17px; height:17px; flex-shrink:0; }
   .zzap-sectionRow .zzap-sectionLabel { margin-bottom:10px; }
   .zzap-clearBtn {
     font-size:11px; font-weight:600; color:var(--ink-soft); background:transparent;
     border:1px solid var(--line); border-radius:5px; padding:3px 8px; margin-bottom:8px;
   }
   .zzap-clearBtn.confirm { color:#fff; background:var(--conflict); border-color:var(--conflict); }
+  .zzap-clearBtn:disabled { opacity:0.45; }
+  .zzap-clearBtn.offweek { border-color:var(--near); color:var(--near); }
   .zzap-card {
     background:var(--surface); border:1px solid var(--line); border-radius:8px;
-    padding:14px; margin-bottom:10px;
+    padding:12px; margin-bottom:8px;
   }
   .zzap-transcript {
     width:100%; min-height:88px; border:1px solid var(--line); border-radius:6px;
@@ -111,7 +152,7 @@
     background:var(--available); color:#fff; font-size:14px; font-weight:600;
     display:flex; align-items:center; justify-content:center; gap:8px;
   }
-  .zzap-field { margin-bottom:10px; }
+  .zzap-field { margin-bottom:8px; }
   .zzap-field label { display:block; font-size:12px; color:var(--ink-soft); margin-bottom:4px; }
   .zzap-field select, .zzap-field input {
     width:100%; height:44px; border:1px solid var(--line); border-radius:6px;
@@ -123,17 +164,31 @@
     display:flex; align-items:center; justify-content:center; gap:8px;
   }
   .zzap-addBtn:disabled { background:var(--line); color:var(--ink-soft); }
-  .zzap-personRow { margin-bottom:16px; }
-  .zzap-personTop { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px; }
-  .zzap-personName { font-size:14px; font-weight:600; }
-  .zzap-personMeta {
-    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
-    font-variant-numeric:tabular-nums; font-size:13px; font-weight:600;
-    display:flex; gap:8px; align-items:baseline;
+  .zzap-personRow {
+    display:grid; gap:2px 8px; margin-bottom:8px; align-items:center;
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:"name nums status" "track track track";
   }
-  .zzap-personMeta .status { font-family:inherit; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; font-weight:700; }
-  .zzap-remainingLine { font-size:11px; color:var(--ink-soft); margin-bottom:6px; }
-  .zzap-track { position:relative; height:20px; border-radius:3px; background:#EFEFEC; border:1px solid var(--line); overflow:hidden; }
+  .zzap-personName { grid-area:name; font-size:13px; font-weight:600; white-space:nowrap; }
+  .zzap-personNums {
+    grid-area:nums; justify-self:end; white-space:nowrap;
+    font-size:12px; font-weight:600; color:var(--ink-soft);
+  }
+  /* Figures get the monospace/tabular face so they line up down the column;
+     the words stay in the normal sans face so they don't read as stretched. */
+  .zzap-personNums .num {
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    font-variant-numeric:tabular-nums; color:var(--ink);
+  }
+  .zzap-personNums .lbl { font-weight:500; }
+  .zzap-personNums .sep { opacity:0.45; padding:0 1px; }
+  .zzap-personNums .over { color:var(--conflict); }
+  .zzap-personStatus {
+    grid-area:status; justify-self:end; white-space:nowrap;
+    font-size:10px; letter-spacing:0.05em; text-transform:uppercase; font-weight:700;
+  }
+  .zzap-track { grid-area:track; }
+  .zzap-track { position:relative; height:16px; border-radius:3px; background:#EFEFEC; border:1px solid var(--line); overflow:hidden; }
   .zzap-tick { position:absolute; top:0; bottom:0; width:1px; background:var(--line); z-index:1; }
   .zzap-fill { position:absolute; top:0; left:0; bottom:0; z-index:2; }
   .zzap-fillVacation {
@@ -182,7 +237,9 @@
   }
   .zzap-delBtn:active { background:var(--accent-soft); }
   .zzap-warnLine { display:flex; align-items:center; gap:6px; color:var(--conflict); font-size:12px; font-weight:700; margin-top:10px; }
-  .zzap-priorityRow { display:flex; align-items:center; justify-content:space-between; margin-top:10px; gap:10px; }
+  .zzap-priorityRow { display:flex; align-items:center; gap:8px; margin-top:8px; }
+  .zzap-priorityRow label { flex-shrink:0; }
+  .zzap-priorityRow select { flex:0 0 auto; }
   .zzap-priorityRow label { font-size:12px; color:var(--ink-soft); }
   .zzap-priorityRow select { height:36px; border:1px solid var(--line); border-radius:6px; font-size:14px; background:var(--surface); color:var(--ink); padding:0 8px; }
   .zzap-empty { text-align:center; color:var(--ink-soft); font-size:13px; padding:24px 0; }
@@ -197,36 +254,82 @@
     background-color: var(--carryover);
     background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.4) 0px, rgba(255,255,255,0.4) 1px, transparent 1px, transparent 2.5px);
   }
+ 
+  /* ---------- Wider screens: use the horizontal space instead of scrolling ---------- */
+  @media (min-width: 900px) {
+    .zzap-app { max-width:1120px; padding-bottom:32px; }
+    .zzap-main {
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+      gap:0 20px; align-items:start; padding:0 4px;
+    }
+    .zzap-col { min-width:0; }
+ 
+    /* bar stays full-width beneath the text — just tightened up */
+    .zzap-personRow { margin-bottom:7px; }
+ 
+    /* add-assignment form pairs up its fields */
+    .zzap-formGrid { display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+    .zzap-formGrid .wide { grid-column:1 / -1; }
+ 
+    /* assignment cards sit two-up */
+    #assignments-list { display:grid; grid-template-columns:1fr 1fr; gap:0 8px; align-items:start; }
+    .zzap-header { position:static; }
+    .zzap-headerNote { font-size:11px; }
+  }
+ 
+  @media (min-width: 1400px) {
+    .zzap-app { max-width:1320px; }
+  }
 </style>
 </head>
 <body>
-
+ 
 <div class="zzap-app">
   <div class="zzap-header">
     <div class="zzap-headerTop">
       <div class="zzap-wordmark">
         <b>zzap</b>
         <span>Weekly Resourcing</span>
-        <span class="zzap-weekLabel" id="week-label" style="display:none;"></span>
-        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v4-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v15-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
         <span class="zzap-statusPill" id="status-pill">Loading…</span>
+        <button class="zzap-iconBtn" id="export-btn" aria-label="Download a backup of all weeks" title="Download a backup of all weeks">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
         <button class="zzap-iconBtn" id="refresh-btn" aria-label="Refresh shared data">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
         </button>
       </div>
     </div>
+    <div class="zzap-weekNav">
+      <button class="zzap-weekNavBtn" id="week-prev" aria-label="Previous week">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="zzap-weekNavCenter">
+        <div class="zzap-weekNavLabel" id="week-label"></div>
+        <div class="zzap-weekNavSub" id="week-relative"></div>
+      </div>
+      <button class="zzap-weekNavBtn" id="week-next" aria-label="Next week">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="zzap-futureBanner" id="future-banner" style="display:none;">
+      <span id="future-banner-text"></span>
+      <button class="zzap-todayBtn" id="week-today">Back to this week</button>
+    </div>
     <div class="zzap-headerNote">
-      CLEARS END OF DAY THURSDAY OF EVERY WEEK. ADD APPROVED VACATION TIME AND UNFINISHED PROJECT WORK ON FRIDAY BY NOON FOR RESOURCING PURPOSES.
+      PLEASE ADD APPROVED VACATION TIME BY FRIDAY AT NOON FOR RESOURCING PURPOSES. RECURRING ASSIGNMENTS CARRY FORWARD AUTOMATICALLY EACH WEEK.
     </div>
     <div class="zzap-errorDetail" id="error-detail" style="display:none;">
       <span id="error-detail-text"></span>
       <button class="zzap-retryBtn" id="retry-btn">Retry now</button>
     </div>
   </div>
-
+ 
+  <div class="zzap-main">
+  <div class="zzap-col">
   <div class="zzap-section">
     <div class="zzap-sectionLabel">Describe a resourcing need</div>
     <div class="zzap-card">
@@ -243,40 +346,46 @@
       <div class="zzap-voiceMsg" id="voice-msg"></div>
     </div>
   </div>
-
+ 
   <div class="zzap-section" id="proposals-wrap" style="display:none;">
     <div class="zzap-sectionLabel">Review parsed assignments</div>
     <div id="add-all-wrap"></div>
     <div id="proposals-list"></div>
   </div>
-
+ 
   <div class="zzap-section">
     <div class="zzap-sectionLabel">Add assignment</div>
     <div class="zzap-card">
-      <div class="zzap-field">
-        <label>Person</label>
-        <select id="person-select"><option value="">Select person…</option></select>
-      </div>
-      <div class="zzap-field">
-        <label>Project</label>
-        <input id="project-input" list="zzap-projects" placeholder="New or existing — type anything" />
-        <datalist id="zzap-projects"></datalist>
-      </div>
-      <div class="zzap-field">
-        <label>Time Duration (days)</label>
-        <select id="capacity-select"><option value="">Select days…</option></select>
-      </div>
-      <div class="zzap-field">
-        <label>Phase</label>
-        <select id="phase-select"><option value="">Select phase…</option></select>
-      </div>
-      <div class="zzap-field">
-        <label>Notes (optional)</label>
-        <input id="notes-input" placeholder="Add a note" />
+      <div class="zzap-formGrid">
+        <div class="zzap-field">
+          <label>Person</label>
+          <select id="person-select"><option value="">Select person…</option></select>
+        </div>
+        <div class="zzap-field">
+          <label>Time Duration (days)</label>
+          <select id="capacity-select"><option value="">Select days…</option></select>
+        </div>
+        <div class="zzap-field wide">
+          <label>Project</label>
+          <input id="project-input" list="zzap-projects" placeholder="New or existing — type anything" />
+          <datalist id="zzap-projects"></datalist>
+        </div>
+        <div class="zzap-field">
+          <label>Phase</label>
+          <select id="phase-select"><option value="">Select phase…</option></select>
+        </div>
+        <div class="zzap-field">
+          <label>Notes (optional)</label>
+          <input id="notes-input" placeholder="Add a note" />
+        </div>
       </div>
       <label class="zzap-checkboxRow">
         <input type="checkbox" id="carried-checkbox" />
         Carried over from last week (unfinished work)
+      </label>
+      <label class="zzap-checkboxRow">
+        <input type="checkbox" id="recurring-checkbox" />
+        Recurring — carries forward automatically each week
       </label>
       <button class="zzap-addBtn" id="add-btn" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
@@ -284,29 +393,43 @@
       </button>
     </div>
   </div>
-
+ 
+  </div>
+  <div class="zzap-col">
   <div class="zzap-section">
-    <div class="zzap-sectionLabel">Capacity by person</div>
-    <div class="zzap-legend">
+    <div class="zzap-sectionRow">
+      <div class="zzap-sectionLabel">Capacity by person</div>
+      <button class="zzap-clearBtn" id="cap-minimize-btn" title="Minimize this section">Minimize</button>
+    </div>
+    <div class="zzap-filterRow" id="cap-filter-row">
+      <label for="cap-filter-person">Show</label>
+      <select id="cap-filter-person"><option value="">All people</option></select>
+    </div>
+    <div class="zzap-legend" id="cap-legend">
       <span class="zzap-legendSwatch zzap-legendVacation"></span> vacation
       <span class="zzap-legendSwatch zzap-legendCarry"></span> carried over
     </div>
     <div id="people-list"></div>
   </div>
-
+ 
   <div class="zzap-section">
     <div class="zzap-sectionRow">
       <div class="zzap-sectionLabel">All assignments</div>
-      <button class="zzap-clearBtn" id="clear-all-btn" style="display:none;">Clear all</button>
+      <button class="zzap-clearBtn" id="clear-all-btn" style="display:none;">Clear all (non-recurring)</button>
+    </div>
+    <div class="zzap-filterRow" id="filter-row" style="display:none;">
+      <label for="filter-person">Filter</label>
+      <select id="filter-person"><option value="">All people</option></select>
     </div>
     <div id="assignments-list"></div>
   </div>
+  </div>
 </div>
-
+ 
 <script>
 (function () {
   "use strict";
-
+ 
   // Last-resort safety net: if anything anywhere in this script throws an
   // uncaught error, show it on the page instead of leaving a silently
   // broken feature with no clue why.
@@ -328,7 +451,7 @@
   window.addEventListener("unhandledrejection", function (e) {
     showFatalError(e.reason && e.reason.message ? e.reason.message : String(e.reason));
   });
-
+ 
   /* ================================================================ */
   /* FIREBASE CONFIG — replace this URL with your own Firebase project */
   /* ================================================================ */
@@ -340,17 +463,17 @@
   //    (looks like https://YOUR-PROJECT-default-rtdb.firebaseio.com)
   //    and paste it below, replacing the placeholder.
   const FIREBASE_DATABASE_URL = "https://resourcing-dbab4-default-rtdb.firebaseio.com";
-
+ 
   const ASSIGNMENTS_PATH = "zzapResourcing/assignments";
   const RESET_PATH = "zzapResourcing/weekResetPeriod";
-
+ 
   async function fbGet(path) {
     const url = `${FIREBASE_DATABASE_URL}/${path}.json`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Firebase GET ${res.status}: ${res.statusText} — tried ${url}`);
     return res.json(); // null if the path has never been written
   }
-
+ 
   async function fbSet(path, value) {
     const url = `${FIREBASE_DATABASE_URL}/${path}.json`;
     const res = await fetch(url, {
@@ -361,48 +484,48 @@
     if (!res.ok) throw new Error(`Firebase PUT ${res.status}: ${res.statusText} — tried ${url}`);
     return res.json();
   }
-
+ 
   function storageConfigured() {
     return FIREBASE_DATABASE_URL.indexOf("YOUR-PROJECT-ID") === -1;
   }
-
+ 
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
-
-  const BUILD_STAMP = "Build 2026-07-22 · v4-standalone";
-
+ 
+  const BUILD_STAMP = "Build 2026-07-22 · v15-standalone";
+ 
   const STANDARD_PEOPLE = [
-    "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark",
+    "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark", "Angela",
     "Loren", "Paul", "Matt", "Anis", "Kaley",
     "Cassie", "Kyle", "Maria", "Lisa", "Ishaan",
     "Robert", "Marco", "Melanie", "Unassigned"
   ];
-  const PINNED_BOTTOM = ["Joe", "Adam", "Zahra", "Mark", "Cassie"];
-  const PHASES = ["Proposal", "Schematic", "Design Development", "Permit", "Tender", "Construction", "Closeout", "CA", "Vacation"];
-  const STANDARD_PROJECTS = ["Vacation"];
+  const PINNED_BOTTOM = ["Joe", "Justine", "Zahra", "Adam", "Mark"];
+  const PHASES = ["Feasibility", "Proposal", "Schematic", "Design Development", "Permit", "Tender", "Con Docs", "Closeout", "CA", "Vacation", "Non-Billable"];
+  const STANDARD_PROJECTS = ["Vacation", "Management"];
   const PRIORITIES = ["Low", "Normal", "High", "Urgent"];
   const CAPACITIES = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
   const DAYS_PER_WEEK = 5;
   const SCALE_MAX = 7.5;
   const TICKS = [];
   for (let t = 0.5; t < SCALE_MAX; t += 0.5) TICKS.push(t);
-
+ 
   const ICONS = {
     trash: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
     alert: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.73-2Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
     plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
     check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
   };
-
+ 
   function makeId() {
     return "a-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
   }
-
+ 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
-
+ 
   function describeError(e) {
     if (!e) return "Unknown error";
     if (typeof e === "string") return e;
@@ -414,20 +537,20 @@
       return String(e);
     }
   }
-
+ 
   function statusFor(totalDays) {
     if (totalDays > 6) return { label: "Severe", color: "var(--severe)" };
     if (totalDays > 5) return { label: "Conflict", color: "var(--conflict)" };
     if (totalDays > 4) return { label: "Near capacity", color: "var(--near)" };
     return { label: "Available", color: "var(--available)" };
   }
-
+ 
   function daysLabel(days) {
     const rounded = Math.round(days * 2) / 2;
     const label = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
     return label + "d";
   }
-
+ 
   function getCurrentWeekPeriodKey(now) {
     now = now || new Date();
     const day = now.getDay();
@@ -438,7 +561,7 @@
     const d = String(periodStart.getDate()).padStart(2, "0");
     return y + "-" + m + "-" + d;
   }
-
+ 
   function formatWeekLabel(periodKey) {
     if (!periodKey) return "";
     const parts = periodKey.split("-").map(Number);
@@ -446,9 +569,38 @@
     const monday = new Date(thursday.getFullYear(), thursday.getMonth(), thursday.getDate() + 4);
     return monday.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   }
-
+ 
+  // Shift a week period key forward/back by n weeks. Period keys are always
+  // the Thursday that starts the period, so this is plain date arithmetic.
+  function shiftWeekPeriod(periodKey, n) {
+    const parts = periodKey.split("-").map(Number);
+    const d = new Date(parts[0], parts[1] - 1, parts[2] + n * 7);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return y + "-" + m + "-" + dd;
+  }
+ 
+  // How many weeks ahead a period is relative to the current one.
+  // 0 = this week, 1 = next week, -1 = a past week, etc.
+  function weeksAhead(periodKey, currentKey) {
+    const a = periodKey.split("-").map(Number);
+    const b = currentKey.split("-").map(Number);
+    const da = new Date(a[0], a[1] - 1, a[2]);
+    const db = new Date(b[0], b[1] - 1, b[2]);
+    return Math.round((da - db) / (7 * 24 * 60 * 60 * 1000));
+  }
+ 
+  function describeWeek(periodKey, currentKey) {
+    const n = weeksAhead(periodKey, currentKey);
+    if (n === 0) return "This week";
+    if (n === 1) return "Next week";
+    if (n < 0) return Math.abs(n) + (Math.abs(n) === 1 ? " week ago" : " weeks ago");
+    return "In " + n + " weeks";
+  }
+ 
   /* ---------------- Offline parser (unchanged logic, plain JS) ---------------- */
-
+ 
   function levenshtein(a, b) {
     const m = a.length, n = b.length;
     if (m === 0) return n;
@@ -465,7 +617,7 @@
     }
     return prev[n];
   }
-
+ 
   function nameDistanceOk(a, b) {
     a = a.toLowerCase(); b = b.toLowerCase();
     if (a === b) return 0;
@@ -476,11 +628,11 @@
     if (maxLen > 5 && d <= 2) return d;
     return null;
   }
-
+ 
   function cleanToken(t) {
     return t.replace(/^[^a-zA-Z0-9']+|[^a-zA-Z0-9'%]+$/g, "");
   }
-
+ 
   function findPeopleMentions(tokens, people) {
     const entries = people.map(function (person) {
       const parts = person.split(/\s+/);
@@ -522,9 +674,9 @@
     }
     return mentions;
   }
-
+ 
   const CONNECTORS = { and: 1, "&": 1, plus: 1, ",": 1 };
-
+ 
   function groupMentions(tokens, mentions) {
     const groups = [];
     for (let m = 0; m < mentions.length; m++) {
@@ -544,9 +696,9 @@
     }
     return groups;
   }
-
+ 
   const NUM_WORDS = { ten: 10, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90, hundred: 100 };
-
+ 
   function extractCapacity(seg) {
     let cap = null, s = seg, m;
     m = s.match(/(?:\b(?:at|for)\s+)?\bhalf\s*(?:a\s*)?day\b/i);
@@ -590,7 +742,7 @@
     if (cap != null) cap = Math.min(DAYS_PER_WEEK, Math.max(0.5, Math.round(cap * 2) / 2));
     return { cap: cap, rest: s };
   }
-
+ 
   function extractCapacityAndPhase(segText) {
     let s = segText;
     let atomicCap = null, atomicPhase = null;
@@ -616,29 +768,32 @@
     const phaseRes = atomicPhase != null ? { phase: atomicPhase, rest: capRes.rest } : extractPhase(capRes.rest);
     return { cap: capRes.cap, phase: phaseRes.phase, rest: phaseRes.rest };
   }
-
+ 
   const PHASE_SYNONYMS = [
     { phase: "Vacation", patterns: ["vacation", "time off", "pto", "day off", "days off", "holiday", "out of office", "ooo"] },
+    { phase: "Non-Billable", patterns: ["non-billable", "non billable", "nonbillable", "internal", "admin", "overhead"] },
+    { phase: "Feasibility", patterns: ["feasibility study", "feasibility", "due diligence"] },
     { phase: "Design Development", patterns: ["design development", "dd"] },
     { phase: "Schematic", patterns: ["schematic design", "schematics", "schematic", "sd"] },
     { phase: "CA", patterns: ["contract administration", "contract admin", "site review", "ca"] },
     { phase: "Closeout", patterns: ["closeout", "close out", "close-out"] },
-    { phase: "Construction", patterns: ["construction documents", "working drawings", "construction", "cds", "cd"] },
+    { phase: "Con Docs", patterns: ["con docs", "construction documents", "working drawings", "construction", "cds", "cd"] },
     { phase: "Permit", patterns: ["permitting", "permit"] },
     { phase: "Tender", patterns: ["tendering", "tender", "bidding", "bid"] },
     { phase: "Proposal", patterns: ["proposal", "rfp", "pursuit", "fee letter"] }
   ];
-
+ 
   const FUZZY_PHASE_WORDS = [
     ["vacation", "Vacation"],
     ["schematic", "Schematic"], ["permit", "Permit"], ["tender", "Tender"],
-    ["construction", "Construction"], ["closeout", "Closeout"], ["proposal", "Proposal"]
+    ["construction", "Con Docs"], ["closeout", "Closeout"], ["proposal", "Proposal"],
+    ["feasibility", "Feasibility"]
   ];
-
+ 
   function escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
-
+ 
   function extractPhase(seg) {
     let s = seg;
     for (let i = 0; i < PHASE_SYNONYMS.length; i++) {
@@ -662,7 +817,7 @@
     }
     return { phase: null, rest: s };
   }
-
+ 
   const EDGE_STOPWORDS = {};
   ["put", "puts", "assign", "assigned", "add", "added", "give", "gets", "get", "goes",
    "needs", "need", "is", "are", "be", "will", "should", "can", "please", "also", "then",
@@ -671,20 +826,20 @@
    "doing", "working", "work", "with", "spend", "spending", "time", "help", "helping",
    "project", "job", "file", "pursuit", "new", "phase", "up", "some", "it", ","
   ].forEach(function (w) { EDGE_STOPWORDS[w] = true; });
-
+ 
   function extractProject(seg) {
     let words = seg.split(/\s+/).map(function (w) { return w.trim(); }).filter(Boolean);
     while (words.length && EDGE_STOPWORDS[cleanToken(words[0]).toLowerCase()]) words.shift();
     while (words.length && EDGE_STOPWORDS[cleanToken(words[words.length - 1]).toLowerCase()]) words.pop();
     return words.join(" ").replace(/\s+/g, " ").replace(/^[,.;:]+|[,.;:]+$/g, "").trim();
   }
-
+ 
   function parseDescription(text, people) {
     const rawTokens = text.split(/\s+/).filter(Boolean);
     const mentions = findPeopleMentions(rawTokens, people);
     const groups = groupMentions(rawTokens, mentions);
     const proposals = [];
-
+ 
     if (groups.length === 0) {
       const r = extractCapacityAndPhase(text);
       let project = extractProject(r.rest);
@@ -692,7 +847,7 @@
       proposals.push({ pid: makeId(), person: "", project: project, capacity: r.cap != null ? String(r.cap) : "", phase: r.phase || "" });
       return proposals;
     }
-
+ 
     for (let g = 0; g < groups.length; g++) {
       const group = groups[g];
       const segStart = group.end;
@@ -717,23 +872,34 @@
     }
     return proposals;
   }
-
+ 
   /* ---------------- App state & rendering ---------------- */
-
+ 
   const state = {
-    assignments: [],
+    assignments: [],      // every assignment, across all weeks
     loading: true,
     status: "Loading…",
     statusKind: "idle",
-    weekPeriod: null,
+    weekPeriod: null,     // the current real-world week period
+    viewWeek: null,       // the week currently being viewed/edited
     proposals: [],
+    filterPerson: "",     // "" = show everyone
+    capFilterPerson: "",  // "" = show everyone in the capacity section
+    capMinimized: false,  // collapse the capacity section
     lastErrorDetail: ""
   };
-
+ 
   const el = {
     statusPill: document.getElementById("status-pill"),
     refreshBtn: document.getElementById("refresh-btn"),
+    exportBtn: document.getElementById("export-btn"),
     weekLabel: document.getElementById("week-label"),
+    weekRelative: document.getElementById("week-relative"),
+    weekPrev: document.getElementById("week-prev"),
+    weekNext: document.getElementById("week-next"),
+    weekToday: document.getElementById("week-today"),
+    futureBanner: document.getElementById("future-banner"),
+    futureBannerText: document.getElementById("future-banner-text"),
     buildStamp: document.getElementById("build-stamp"),
     dbUrlStamp: document.getElementById("db-url-stamp"),
     errorDetail: document.getElementById("error-detail"),
@@ -751,23 +917,30 @@
     phaseSelect: document.getElementById("phase-select"),
     notesInput: document.getElementById("notes-input"),
     carriedCheckbox: document.getElementById("carried-checkbox"),
-    addBtn: document.getElementById("add-btn"),
+    recurringCheckbox: document.getElementById("recurring-checkbox"),
+    filterPerson: document.getElementById("filter-person"),
+    filterRow: document.getElementById("filter-row"),
+    capFilterPerson: document.getElementById("cap-filter-person"),
+    capFilterRow: document.getElementById("cap-filter-row"),
+    capMinimizeBtn: document.getElementById("cap-minimize-btn"),
+    capLegend: document.getElementById("cap-legend"),
     peopleList: document.getElementById("people-list"),
+    addBtn: document.getElementById("add-btn"),
     assignmentsList: document.getElementById("assignments-list"),
     projectDatalist: document.getElementById("zzap-projects"),
     clearAllBtn: document.getElementById("clear-all-btn")
   };
-
+ 
   el.buildStamp.textContent = BUILD_STAMP;
   el.dbUrlStamp.textContent = "DB: " + FIREBASE_DATABASE_URL.replace(/^https:\/\//, "");
-
+ 
   function allPeople() {
     const set = {};
     STANDARD_PEOPLE.forEach(function (p) { set[p] = true; });
     state.assignments.forEach(function (a) { if (a.person) set[a.person] = true; });
     return Object.keys(set).sort(function (a, b) { return a.localeCompare(b); });
   }
-
+ 
   function peopleWithLoad() {
     const people = allPeople();
     const pinnedSet = {};
@@ -777,29 +950,35 @@
       .sort(function (a, b) { return PINNED_BOTTOM.indexOf(a) - PINNED_BOTTOM.indexOf(b); });
     return rest.concat(pinned);
   }
-
+ 
+  // Only the assignments belonging to the week currently being viewed.
+  // Everything on screen (capacity bars, cards, totals) is scoped to this.
+  function weekAssignments() {
+    return state.assignments.filter(function (a) { return a.week === state.viewWeek; });
+  }
+ 
   function totalsByPerson() {
     const t = {};
-    state.assignments.forEach(function (a) { t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0); });
+    weekAssignments().forEach(function (a) { t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0); });
     return t;
   }
-
+ 
   function vacationTotalsByPerson() {
     const t = {};
-    state.assignments.forEach(function (a) {
+    weekAssignments().forEach(function (a) {
       if (a.phase === "Vacation" && !a.carriedOver) t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0);
     });
     return t;
   }
-
+ 
   function carryOverTotalsByPerson() {
     const t = {};
-    state.assignments.forEach(function (a) {
+    weekAssignments().forEach(function (a) {
       if (a.carriedOver) t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0);
     });
     return t;
   }
-
+ 
   function projectSuggestions() {
     const seen = {}; const out = [];
     STANDARD_PROJECTS.forEach(function (p) { if (!seen[p]) { seen[p] = true; out.push(p); } });
@@ -808,31 +987,40 @@
     });
     return out;
   }
-
+ 
   function sortedAssignments() {
-    return state.assignments.slice().sort(function (a, b) { return a.person.localeCompare(b.person); });
+    return weekAssignments().sort(function (a, b) { return a.person.localeCompare(b.person); });
   }
-
+ 
   function proposalReady(p) {
     return !!(p.person && p.project && p.project.trim() && p.capacity && p.phase);
   }
-
+ 
   /* ---- render pieces ---- */
-
+ 
   function renderStatus() {
     el.statusPill.textContent = state.status;
     el.statusPill.className = "zzap-statusPill" + (state.statusKind === "idle" ? "" : " " + state.statusKind);
   }
-
+ 
   function renderWeekLabel() {
-    if (state.weekPeriod) {
-      el.weekLabel.style.display = "";
-      el.weekLabel.textContent = "Week of Mon, " + formatWeekLabel(state.weekPeriod);
+    // Never render a blank nav bar — fall back to the real current week.
+    if (!state.weekPeriod) state.weekPeriod = getCurrentWeekPeriodKey();
+    if (!state.viewWeek) state.viewWeek = state.weekPeriod;
+    el.weekLabel.textContent = "Week of Mon, " + formatWeekLabel(state.viewWeek);
+    el.weekRelative.textContent = describeWeek(state.viewWeek, state.weekPeriod);
+ 
+    const n = weeksAhead(state.viewWeek, state.weekPeriod);
+    if (n === 0) {
+      el.futureBanner.style.display = "none";
     } else {
-      el.weekLabel.style.display = "none";
+      el.futureBanner.style.display = "";
+      el.futureBannerText.textContent = n > 0
+        ? "Planning ahead — you're editing a future week, not the current one."
+        : "Viewing a past week — kept as a record.";
     }
   }
-
+ 
   function renderErrorDetail() {
     if (state.lastErrorDetail) {
       el.errorDetail.style.display = "";
@@ -841,7 +1029,7 @@
       el.errorDetail.style.display = "none";
     }
   }
-
+ 
   function setStatus(text, kind) {
     state.status = text;
     state.statusKind = kind;
@@ -852,12 +1040,12 @@
       renderStatus();
     }, 2200);
   }
-
+ 
   function setErrorDetail(text) {
     state.lastErrorDetail = text || "";
     renderErrorDetail();
   }
-
+ 
   function rebuildPersonSelect() {
     const current = el.personSelect.value;
     const people = allPeople();
@@ -868,7 +1056,20 @@
     el.personSelect.innerHTML = html;
     el.personSelect.value = people.indexOf(current) !== -1 ? current : "";
   }
-
+ 
+  function rebuildFilterSelect() {
+    const people = allPeople();
+    let html = '<option value="">All people</option>';
+    for (let i = 0; i < people.length; i++) {
+      html += '<option value="' + escapeHtml(people[i]) + '">' + escapeHtml(people[i]) + "</option>";
+    }
+    el.filterPerson.innerHTML = html;
+    el.filterPerson.value = people.indexOf(state.filterPerson) !== -1 ? state.filterPerson : "";
+ 
+    el.capFilterPerson.innerHTML = html;
+    el.capFilterPerson.value = people.indexOf(state.capFilterPerson) !== -1 ? state.capFilterPerson : "";
+  }
+ 
   function rebuildProjectDatalist() {
     const suggestions = projectSuggestions();
     let html = "";
@@ -877,12 +1078,27 @@
     }
     el.projectDatalist.innerHTML = html;
   }
-
+ 
   function renderPeopleBars() {
+    // Minimize / expand controls reflect current state.
+    el.capMinimizeBtn.textContent = state.capMinimized ? "Show" : "Minimize";
+    el.capMinimizeBtn.title = state.capMinimized ? "Expand this section" : "Minimize this section";
+    const hidden = state.capMinimized;
+    el.capFilterRow.style.display = hidden ? "none" : "";
+    el.capLegend.style.display = hidden ? "none" : "";
+    el.peopleList.style.display = hidden ? "none" : "";
+    if (hidden) { el.peopleList.innerHTML = ""; return; }
+ 
     const totals = totalsByPerson();
     const vacTotals = vacationTotalsByPerson();
     const carryTotals = carryOverTotalsByPerson();
-    const people = peopleWithLoad();
+    const people = state.capFilterPerson
+      ? peopleWithLoad().filter(function (p) { return p === state.capFilterPerson; })
+      : peopleWithLoad();
+    if (people.length === 0) {
+      el.peopleList.innerHTML = '<div class="zzap-empty">No one to show.</div>';
+      return;
+    }
     let html = "";
     for (let i = 0; i < people.length; i++) {
       const person = people[i];
@@ -902,15 +1118,20 @@
       for (let tI = 0; tI < TICKS.length; tI++) {
         ticksHtml += '<div class="zzap-tick" style="left:' + ((TICKS[tI] / SCALE_MAX) * 100) + '%"></div>';
       }
+      const isOver = remaining < 0;
+      const remainNum = daysLabel(Math.abs(remaining));
+      const remainWord = isOver ? "over" : "left";
+      const overCls = isOver ? " over" : "";
       html +=
         '<div class="zzap-personRow">' +
-          '<div class="zzap-personTop">' +
-            '<div class="zzap-personName">' + escapeHtml(person) + "</div>" +
-            '<div class="zzap-personMeta"><span>' + daysLabel(total) + ' booked</span><span class="status" style="color:' + st.color + '">' + st.label + "</span></div>" +
+          '<div class="zzap-personName">' + escapeHtml(person) + "</div>" +
+          '<div class="zzap-personNums">' +
+            '<span class="num">' + daysLabel(total) + '</span><span class="lbl"> booked</span>' +
+            '<span class="sep">·</span>' +
+            '<span class="num' + overCls + '">' + remainNum + '</span>' +
+            '<span class="lbl' + overCls + '"> ' + remainWord + "</span>" +
           "</div>" +
-          '<div class="zzap-remainingLine">' +
-            (remaining >= 0 ? daysLabel(remaining) + " remaining" : daysLabel(Math.abs(remaining)) + " over") +
-          "</div>" +
+          '<div class="zzap-personStatus" style="color:' + st.color + '">' + st.label + "</div>" +
           '<div class="zzap-track">' + ticksHtml +
             '<div class="zzap-fill" style="width:' + workPct + '%;background:' + st.color + '"></div>' +
             (vacation > 0 ? '<div class="zzap-fillVacation" style="left:' + workPct + '%;width:' + vacationPct + '%"></div>' : "") +
@@ -921,13 +1142,36 @@
     }
     el.peopleList.innerHTML = html;
   }
-
+ 
   function renderAssignments() {
     const totals = totalsByPerson();
-    const rows = sortedAssignments();
-    el.clearAllBtn.style.display = rows.length > 0 ? "" : "none";
+    const allRows = sortedAssignments();
+    const rows = state.filterPerson
+      ? allRows.filter(function (a) { return a.person === state.filterPerson; })
+      : allRows;
+    el.clearAllBtn.style.display = allRows.length > 0 ? "" : "none";
+    el.filterRow.style.display = allRows.length > 0 ? "" : "none";
+    // Reflect exactly what the button will do, so it never looks inert.
+    const clearable = allRows.filter(function (a) { return !a.recurring; }).length;
+    el.clearAllBtn.disabled = clearable === 0;
+    el.clearAllBtn.title = clearable === 0
+      ? "Nothing to clear — every assignment in this week is marked recurring"
+      : "Clears " + clearable + " non-recurring assignment" + (clearable === 1 ? "" : "s") +
+        " in the week of Mon, " + formatWeekLabel(state.viewWeek) + " only. Other weeks are not affected.";
+    if (!confirmClear) {
+      const otherWeek = state.viewWeek !== state.weekPeriod;
+      el.clearAllBtn.textContent = clearable === 0
+        ? "Nothing to clear"
+        : otherWeek
+          ? "Clear " + clearable + " in " + formatWeekLabel(state.viewWeek)
+          : "Clear " + clearable + " (keep recurring)";
+      el.clearAllBtn.classList.toggle("offweek", otherWeek && clearable > 0);
+    }
     if (rows.length === 0) {
-      el.assignmentsList.innerHTML = '<div class="zzap-empty">' + (state.loading ? "Loading shared data…" : "Nothing here yet.") + "</div>";
+      el.assignmentsList.innerHTML = '<div class="zzap-empty">' +
+        (state.loading ? "Loading shared data…"
+          : state.filterPerson ? "No assignments for " + escapeHtml(state.filterPerson) + " this week."
+          : "Nothing here yet.") + "</div>";
       return;
     }
     const people = allPeople();
@@ -967,13 +1211,15 @@
           "</div>" +
           (a.notes ? '<div class="zzap-cardNotes">' + escapeHtml(a.notes) + "</div>" : "") +
           (a.carriedOver ? '<div class="zzap-carryBadge">↺ Carried over from last week</div>' : "") +
+          (a.recurring ? '<div class="zzap-recurBadge">⟳ Recurring</div>' : "") +
           (over ? '<div class="zzap-warnLine">' + ICONS.alert + " Over capacity by " + daysLabel(total - DAYS_PER_WEEK) + " — adjust days above or set priority</div>" : "") +
           '<div class="zzap-priorityRow"><label>Priority</label><select data-role="priority">' + prOptions + "</select></div>" +
+          '<label class="zzap-recurToggle"><input type="checkbox" data-role="recurring"' + (a.recurring ? " checked" : "") + " /> Recurring — carries forward each week</label>" +
         "</div>";
     }
     el.assignmentsList.innerHTML = html;
   }
-
+ 
   function renderProposals() {
     if (state.proposals.length === 0) {
       el.proposalsWrap.style.display = "none";
@@ -988,7 +1234,7 @@
       : "";
     const addAllBtn = document.getElementById("add-all-btn");
     if (addAllBtn) addAllBtn.addEventListener("click", addAllReady);
-
+ 
     const peopleOpts = allPeople();
     let html = "";
     for (let i = 0; i < state.proposals.length; i++) {
@@ -1022,20 +1268,21 @@
     }
     el.proposalsList.innerHTML = html;
   }
-
+ 
   function renderAll() {
     renderStatus();
     renderWeekLabel();
     renderErrorDetail();
     rebuildPersonSelect();
+    rebuildFilterSelect();
     rebuildProjectDatalist();
     renderPeopleBars();
     renderAssignments();
     renderProposals();
   }
-
+ 
   /* ---- persistence (Firebase Realtime Database via REST) ---- */
-
+ 
   async function persist(next) {
     state.assignments = next;
     if (!storageConfigured()) {
@@ -1046,7 +1293,7 @@
     }
     setStatus("Saving…", "idle");
     renderAll();
-
+ 
     const attempts = [0, 600, 1500];
     let lastErr = null;
     for (let i = 0; i < attempts.length; i++) {
@@ -1068,22 +1315,27 @@
     setStatus("Save failed after retries — try again", "err");
     renderAll();
   }
-
+ 
   async function load() {
     setStatus("Loading…", "idle");
-    renderAll();
     const currentPeriod = getCurrentWeekPeriodKey();
-
+    // Establish the week BEFORE any storage work. Otherwise a failed fetch
+    // returns early and the week navigation renders with no label at all.
+    state.weekPeriod = currentPeriod;
+    if (!state.viewWeek) state.viewWeek = currentPeriod;
+    renderAll();
+ 
     if (!storageConfigured()) {
       state.assignments = [];
       state.weekPeriod = currentPeriod;
+      if (!state.viewWeek) state.viewWeek = currentPeriod;
       setErrorDetail("Firebase isn't configured yet — replace FIREBASE_DATABASE_URL near the top of the <script> block with your project's database URL.");
       setStatus("Not shared — Firebase not configured", "err");
       state.loading = false;
       renderAll();
       return;
     }
-
+ 
     let loadedAssignments = [];
     try {
       const raw = await fbGet(ASSIGNMENTS_PATH);
@@ -1101,6 +1353,7 @@
         }
         state.assignments = loadedAssignments;
         state.weekPeriod = currentPeriod;
+        if (!state.viewWeek) state.viewWeek = currentPeriod;
         state.loading = false;
         renderAll();
         return;
@@ -1117,40 +1370,95 @@
       renderAll();
       return;
     }
-
+ 
     let storedPeriod = null;
     try {
       storedPeriod = await fbGet(RESET_PATH);
     } catch (e) {
       storedPeriod = null;
     }
-
+ 
+    // Any assignment saved before per-week tracking existed has no `week`
+    // field. Treat those as belonging to whatever period was current when
+    // they were saved, so nothing silently disappears on upgrade.
+    // Rows saved before per-week tracking have no `week`. File them into the
+    // CURRENT week so they show up on open — filing them under an older
+    // period would hide them behind the week arrows and look like data loss.
+    const legacyWeek = currentPeriod;
+    let migrated = false;
+    loadedAssignments = loadedAssignments.map(function (a) {
+      if (!a) return a;
+      let out = a;
+      if (!out.week) { migrated = true; out = Object.assign({}, out, { week: legacyWeek }); }
+      // "Construction" was renamed to "Con Docs" — retag old rows so they
+      // still match the dropdown instead of showing a phase that no longer exists.
+      if (out.phase === "Construction") { migrated = true; out = Object.assign({}, out, { phase: "Con Docs" }); }
+      return out;
+    });
+ 
     if (storedPeriod !== currentPeriod) {
-      loadedAssignments = [];
+      // A new week has begun. Nothing is deleted — past weeks are kept as a
+      // record. The only action is copying RECURRING assignments forward
+      // into the new current week so they don't have to be re-entered.
+      const past = loadedAssignments.filter(function (a) { return weeksAhead(a.week, currentPeriod) < 0; });
+ 
+      // Don't duplicate anything already sitting in the current week.
+      const existingKeys = {};
+      loadedAssignments.forEach(function (a) {
+        if (a.week === currentPeriod) existingKeys[a.person + "|" + a.project + "|" + a.phase] = true;
+      });
+ 
+      // Only carry forward from the most recent past week, so a row can't
+      // be duplicated by several older weeks all holding the same recurring item.
+      let mostRecentPast = null;
+      past.forEach(function (a) {
+        if (mostRecentPast === null || weeksAhead(a.week, mostRecentPast) > 0) mostRecentPast = a.week;
+      });
+ 
+      const carried = [];
+      past.forEach(function (a) {
+        if (!a.recurring || a.week !== mostRecentPast) return;
+        const key = a.person + "|" + a.project + "|" + a.phase;
+        if (existingKeys[key]) return;
+        existingKeys[key] = true;
+        carried.push(Object.assign({}, a, {
+          id: makeId(),
+          week: currentPeriod,
+          carriedOver: false  // recurring is not the same as unfinished work
+        }));
+      });
+ 
+      loadedAssignments = loadedAssignments.concat(carried);
       try {
         await fbSet(ASSIGNMENTS_PATH, loadedAssignments);
         await fbSet(RESET_PATH, currentPeriod);
       } catch (e) {
         // Best effort — the next person to open it will retry.
       }
-      setStatus("New week started — board cleared for re-entry", "ok");
+      setStatus(carried.length > 0
+        ? "New week — " + carried.length + " recurring carried forward"
+        : "New week started", "ok");
     } else {
+      if (migrated) {
+        try { await fbSet(ASSIGNMENTS_PATH, loadedAssignments); } catch (e) {}
+      }
       setStatus("Up to date", "ok");
     }
-
+ 
     state.assignments = loadedAssignments;
     state.weekPeriod = currentPeriod;
+    if (!state.viewWeek) state.viewWeek = currentPeriod;
     state.loading = false;
     renderAll();
   }
-
+ 
   /* ---- actions ---- */
-
+ 
   function updateAddButtonState() {
     const ok = el.personSelect.value && el.projectInput.value.trim() && el.capacitySelect.value && el.phaseSelect.value;
     el.addBtn.disabled = !ok;
   }
-
+ 
   function handleAdd() {
     if (el.addBtn.disabled) return;
     const row = {
@@ -1161,7 +1469,9 @@
       phase: el.phaseSelect.value,
       priority: "Normal",
       notes: el.notesInput.value.trim(),
-      carriedOver: !!el.carriedCheckbox.checked
+      carriedOver: !!el.carriedCheckbox.checked,
+      recurring: !!el.recurringCheckbox.checked,
+      week: state.viewWeek
     };
     persist(state.assignments.concat([row]));
     el.personSelect.value = "";
@@ -1170,9 +1480,10 @@
     el.phaseSelect.value = "";
     el.notesInput.value = "";
     el.carriedCheckbox.checked = false;
+    el.recurringCheckbox.checked = false;
     updateAddButtonState();
   }
-
+ 
   function handleParse() {
     const text = el.transcriptBox.value.trim();
     if (!text) return;
@@ -1192,26 +1503,26 @@
       el.voiceMsg.textContent = "Error while parsing: " + (e.message || String(e)) + " — please report this exact message.";
     }
   }
-
+ 
   function addProposalById(pid) {
     let p = null;
     for (let i = 0; i < state.proposals.length; i++) if (state.proposals[i].pid === pid) p = state.proposals[i];
     if (!p || !proposalReady(p)) return;
-    const row = { id: makeId(), person: p.person, project: p.project.trim(), capacity: Number(p.capacity), phase: p.phase, priority: "Normal", notes: "", carriedOver: false };
+    const row = { id: makeId(), person: p.person, project: p.project.trim(), capacity: Number(p.capacity), phase: p.phase, priority: "Normal", notes: "", carriedOver: false, recurring: false, week: state.viewWeek };
     state.proposals = state.proposals.filter(function (x) { return x.pid !== pid; });
     persist(state.assignments.concat([row]));
   }
-
+ 
   function removeProposalById(pid) {
     state.proposals = state.proposals.filter(function (x) { return x.pid !== pid; });
     renderProposals();
   }
-
+ 
   function addAllReady() {
     const ready = state.proposals.filter(proposalReady);
     if (!ready.length) return;
     const rows = ready.map(function (p) {
-      return { id: makeId(), person: p.person, project: p.project.trim(), capacity: Number(p.capacity), phase: p.phase, priority: "Normal", notes: "", carriedOver: false };
+      return { id: makeId(), person: p.person, project: p.project.trim(), capacity: Number(p.capacity), phase: p.phase, priority: "Normal", notes: "", carriedOver: false, recurring: false, week: state.viewWeek };
     });
     state.proposals = state.proposals.filter(function (p) { return !proposalReady(p); });
     persist(state.assignments.concat(rows));
@@ -1219,7 +1530,7 @@
     el.voiceMsg.textContent = "";
     el.generateBtn.disabled = true;
   }
-
+ 
   function updateProposalCardReadyState(card, p) {
     const ready = proposalReady(p);
     card.classList.toggle("ready", ready);
@@ -1230,42 +1541,112 @@
       fieldEl.classList.toggle("missing", !val);
     });
   }
-
+ 
   let confirmClear = false;
   let confirmClearTimer = null;
+  function clearableCount() {
+    return weekAssignments().filter(function (a) { return !a.recurring; }).length;
+  }
+ 
   function handleClearAllClick() {
-    if (state.assignments.length === 0) return;
+    if (clearableCount() === 0) {
+      setStatus("Nothing to clear — all recurring", "err");
+      return;
+    }
     if (!confirmClear) {
       confirmClear = true;
-      el.clearAllBtn.textContent = "Tap again to confirm";
+      el.clearAllBtn.textContent = "Tap again — clears " + clearableCount() + " in " + formatWeekLabel(state.viewWeek);
       el.clearAllBtn.classList.add("confirm");
       clearTimeout(confirmClearTimer);
       confirmClearTimer = setTimeout(function () {
         confirmClear = false;
-        el.clearAllBtn.textContent = "Clear all";
         el.clearAllBtn.classList.remove("confirm");
+        renderAssignments();
       }, 4000);
       return;
     }
     confirmClear = false;
-    el.clearAllBtn.textContent = "Clear all";
     el.clearAllBtn.classList.remove("confirm");
     clearTimeout(confirmClearTimer);
-    persist([]);
+    // Clears only NON-recurring rows in the week being viewed. Recurring
+    // rows and other weeks are left untouched.
+    const viewing = state.viewWeek;
+    persist(state.assignments.filter(function (a) {
+      return a.week !== viewing || a.recurring;
+    }));
   }
-
+ 
   function populateStaticSelects() {
     let capHtml = '<option value="">Select days…</option>';
     for (let c = 0; c < CAPACITIES.length; c++) capHtml += '<option value="' + CAPACITIES[c] + '">' + CAPACITIES[c] + "d</option>";
     el.capacitySelect.innerHTML = capHtml;
-
+ 
     let phaseHtml = '<option value="">Select phase…</option>';
     for (let p = 0; p < PHASES.length; p++) phaseHtml += '<option value="' + PHASES[p] + '">' + PHASES[p] + "</option>";
     el.phaseSelect.innerHTML = phaseHtml;
   }
-
+ 
   /* ---- event wiring ---- */
-
+ 
+  function goToWeek(periodKey) {
+    state.viewWeek = periodKey;
+    state.proposals = [];
+    el.voiceMsg.textContent = "";
+    confirmClear = false;
+    el.clearAllBtn.classList.remove("confirm");
+    renderAll();
+  }
+ 
+  el.weekPrev.addEventListener("click", function () {
+    goToWeek(shiftWeekPeriod(state.viewWeek, -1));
+  });
+  el.weekNext.addEventListener("click", function () {
+    goToWeek(shiftWeekPeriod(state.viewWeek, 1));
+  });
+  el.weekToday.addEventListener("click", function () {
+    goToWeek(state.weekPeriod);
+  });
+ 
+  el.filterPerson.addEventListener("change", function () {
+    state.filterPerson = el.filterPerson.value;
+    renderAssignments();
+  });
+ 
+  el.capFilterPerson.addEventListener("change", function () {
+    state.capFilterPerson = el.capFilterPerson.value;
+    renderPeopleBars();
+  });
+ 
+  el.capMinimizeBtn.addEventListener("click", function () {
+    state.capMinimized = !state.capMinimized;
+    renderPeopleBars();
+  });
+ 
+  function handleExport() {
+    try {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        currentWeek: state.weekPeriod,
+        assignmentCount: state.assignments.length,
+        assignments: state.assignments
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "zzap-resourcing-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      setStatus("Backup downloaded (" + state.assignments.length + " rows)", "ok");
+    } catch (e) {
+      setStatus("Backup failed", "err");
+      setErrorDetail(describeError(e));
+    }
+  }
+ 
+  el.exportBtn.addEventListener("click", handleExport);
   el.refreshBtn.addEventListener("click", load);
   el.retryBtn.addEventListener("click", function () { persist(state.assignments); });
   el.transcriptBox.addEventListener("input", function () {
@@ -1278,7 +1659,7 @@
   el.phaseSelect.addEventListener("change", updateAddButtonState);
   el.addBtn.addEventListener("click", handleAdd);
   el.clearAllBtn.addEventListener("click", handleClearAllClick);
-
+ 
   el.assignmentsList.addEventListener("click", function (e) {
     const delBtn = e.target.closest('[data-role="delete"]');
     if (delBtn) {
@@ -1294,11 +1675,13 @@
       persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { capacity: Number(e.target.value) }) : a; }));
     } else if (e.target.dataset.role === "priority") {
       persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { priority: e.target.value }) : a; }));
+    } else if (e.target.dataset.role === "recurring") {
+      persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { recurring: e.target.checked }) : a; }));
     } else if (e.target.dataset.role === "person") {
       persist(state.assignments.map(function (a) { return a.id === id ? Object.assign({}, a, { person: e.target.value }) : a; }));
     }
   });
-
+ 
   el.proposalsList.addEventListener("input", function (e) {
     const field = e.target.dataset.field;
     if (!field) return;
@@ -1316,9 +1699,9 @@
     const rmBtn = e.target.closest('[data-role="prop-remove"]');
     if (rmBtn) { removeProposalById(rmBtn.closest("[data-pid]").dataset.pid); }
   });
-
+ 
   /* ---- boot ---- */
-
+ 
   try {
     populateStaticSelects();
     renderAll();
@@ -1331,6 +1714,7 @@
   }
 })();
 </script>
-
+ 
 </body>
 </html>
+ 
