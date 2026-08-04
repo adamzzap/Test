@@ -8,7 +8,7 @@
   :root {
     --paper:#F7F6F3; --ink:#1F2A33; --ink-soft:#5B6770; --line:#DBDCD7;
     --accent:#2C5F74; --accent-soft:#E4EEF1;
-    --available:#3C8253; --near:#B9821B; --conflict:#C0392B; --severe:#7A2020; --vacation:#9AA0A6; --carryover:#7D8286;
+    --available:#3C8253; --near:#B9821B; --atcap:#C2601A; --conflict:#C0392B; --severe:#7A2020; --vacation:#9AA0A6; --carryover:#7D8286;
     --surface:#FFFFFF;
   }
   * { box-sizing: border-box; }
@@ -287,7 +287,7 @@
       <div class="zzap-wordmark">
         <b>zzap</b>
         <span>Weekly Resourcing</span>
-        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v16-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v17-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
@@ -487,7 +487,7 @@
  
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
  
-  const BUILD_STAMP = "Build 2026-07-22 · v16-standalone";
+  const BUILD_STAMP = "Build 2026-07-22 · v17-standalone";
  
   const STANDARD_PEOPLE = [
     "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark", "Angela",
@@ -537,7 +537,8 @@
   function statusFor(totalDays) {
     if (totalDays > 6) return { label: "Severe", color: "var(--severe)" };
     if (totalDays > 5) return { label: "Conflict", color: "var(--conflict)" };
-    if (totalDays > 4) return { label: "Near capacity", color: "var(--near)" };
+    if (totalDays >= 5) return { label: "At capacity", color: "var(--atcap)" };
+    if (totalDays >= 4) return { label: "Near capacity", color: "var(--near)" };
     return { label: "Available", color: "var(--available)" };
   }
  
@@ -1654,6 +1655,11 @@
       "</div>";
   }
 })();
+</script>
+ 
+</body>
+</html>
+ 
 </script>
  
 </body>
