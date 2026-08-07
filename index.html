@@ -8,7 +8,7 @@
   :root {
     --paper:#F7F6F3; --ink:#1F2A33; --ink-soft:#5B6770; --line:#DBDCD7;
     --accent:#2C5F74; --accent-soft:#E4EEF1;
-    --available:#3C8253; --near:#B9821B; --atcap:#C2601A; --conflict:#C0392B; --severe:#7A2020; --vacation:#9AA0A6; --carryover:#7D8286;
+    --available:#3C8253; --near:#B9821B; --atcap:#C2601A; --conflict:#C0392B; --severe:#7A2020; --vacation:#9AA0A6; --carryover:#1E3A5F;
     --surface:#FFFFFF;
   }
   * { box-sizing: border-box; }
@@ -225,7 +225,7 @@
   .zzap-checkboxRow input { width:18px; height:18px; flex-shrink:0; }
   .zzap-carryBadge {
     display:inline-block; font-size:11px; font-weight:600; color:var(--carryover);
-    background:#EEEFF0; border:1px solid var(--carryover); border-radius:4px;
+    background:#E7EDF3; border:1px solid var(--carryover); border-radius:4px;
     padding:2px 6px; margin-top:8px;
   }
   .zzap-delBtn {
@@ -287,7 +287,7 @@
       <div class="zzap-wordmark">
         <b>zzap</b>
         <span>Weekly Resourcing</span>
-        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v17-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v19-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
@@ -487,7 +487,7 @@
  
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
  
-  const BUILD_STAMP = "Build 2026-07-22 · v17-standalone";
+  const BUILD_STAMP = "Build 2026-07-22 · v19-standalone";
  
   const STANDARD_PEOPLE = [
     "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark", "Angela",
@@ -496,7 +496,7 @@
     "Robert", "Marco", "Melanie", "Unassigned"
   ];
   const PINNED_BOTTOM = ["Joe", "Justine", "Zahra", "Adam", "Mark"];
-  const PHASES = ["Feasibility", "Proposal", "Schematic", "Design Development", "Permit", "Tender", "Con Docs", "Closeout", "CA", "Vacation", "Non-Billable"];
+  const PHASES = ["Feasibility", "Proposal", "Schematic", "Design Development", "Permit", "Tender", "Con Docs", "Closeout", "CA", "Vacation", "Holiday", "Training", "Non-Billable"];
   const STANDARD_PROJECTS = ["Vacation", "Management"];
   const PRIORITIES = ["Low", "Normal", "High", "Urgent"];
   const CAPACITIES = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
@@ -767,7 +767,9 @@
   }
  
   const PHASE_SYNONYMS = [
-    { phase: "Vacation", patterns: ["vacation", "time off", "pto", "day off", "days off", "holiday", "out of office", "ooo"] },
+    { phase: "Vacation", patterns: ["vacation", "time off", "pto", "day off", "days off", "out of office", "ooo"] },
+    { phase: "Holiday", patterns: ["public holiday", "stat holiday", "statutory holiday", "bank holiday", "holiday"] },
+    { phase: "Training", patterns: ["training", "onboarding", "cpd", "workshop", "course"] },
     { phase: "Non-Billable", patterns: ["non-billable", "non billable", "nonbillable", "internal", "admin", "overhead"] },
     { phase: "Feasibility", patterns: ["feasibility study", "feasibility", "due diligence"] },
     { phase: "Design Development", patterns: ["design development", "dd"] },
@@ -781,7 +783,7 @@
   ];
  
   const FUZZY_PHASE_WORDS = [
-    ["vacation", "Vacation"],
+    ["vacation", "Vacation"], ["holiday", "Holiday"], ["training", "Training"],
     ["schematic", "Schematic"], ["permit", "Permit"], ["tender", "Tender"],
     ["construction", "Con Docs"], ["closeout", "Closeout"], ["proposal", "Proposal"],
     ["feasibility", "Feasibility"]
@@ -1655,11 +1657,6 @@
       "</div>";
   }
 })();
-</script>
- 
-</body>
-</html>
- 
 </script>
  
 </body>
