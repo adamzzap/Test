@@ -292,7 +292,7 @@
       <div class="zzap-wordmark">
         <b>zzap</b>
         <span>Weekly Resourcing</span>
-        <span class="zzap-build" id="build-stamp">Build 2026-10-05 · v23-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-10-05 · v24-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
@@ -495,7 +495,7 @@
  
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
  
-  const BUILD_STAMP = "Build 2026-10-05 · v23-standalone";
+  const BUILD_STAMP = "Build 2026-10-05 · v24-standalone";
  
   const STANDARD_PEOPLE = [
     "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark", "Angela",
@@ -503,6 +503,11 @@
     "Cassie", "Kyle", "Lisa", "Ishaan",
     "Robert", "Marco", "Melanie", "Tyree", "David", "Unassigned"
   ];
+  // People who have left. Maps name -> first week (Thursday period key) in
+  // which they no longer appear. Their rows from that week onward are removed
+  // from the shared data on load; earlier weeks are kept as history.
+  // 2026-10-01 is the week of Mon Oct 5, 2026.
+  const REMOVED_PEOPLE = { "Maria": "2026-10-01", "Matt": "2026-10-01" };
   const PINNED_BOTTOM = ["Joe", "Justine", "Zahra", "Adam", "Mark"];
   const PHASES = ["Feasibility", "Proposal", "Schematic", "Design Development", "Permit", "Tender", "Con Docs", "Closeout", "CA", "Vacation", "Holiday", "Training", "Non-Billable"];
   const STANDARD_PROJECTS = ["Vacation", "Management"];
@@ -944,7 +949,12 @@
   function allPeople() {
     const set = {};
     STANDARD_PEOPLE.forEach(function (p) { set[p] = true; });
-    state.assignments.forEach(function (a) { if (a.person) set[a.person] = true; });
+    state.assignments.forEach(function (a) {
+      if (!a.person) return;
+      // Someone who has left only shows in weeks where they still have rows.
+      if (REMOVED_PEOPLE[a.person] && a.week !== state.viewWeek) return;
+      set[a.person] = true;
+    });
     return Object.keys(set).sort(function (a, b) { return a.localeCompare(b); });
   }
  
@@ -1412,6 +1422,15 @@
       return out;
     });
  
+    // Drop rows for people who have left, from their cutoff week onward.
+    const beforePurge = loadedAssignments.length;
+    loadedAssignments = loadedAssignments.filter(function (a) {
+      if (!a) return false;
+      const cutoff = REMOVED_PEOPLE[a.person];
+      return !(cutoff && weeksAhead(a.week, cutoff) >= 0);
+    });
+    if (loadedAssignments.length !== beforePurge) migrated = true;
+ 
     if (storedPeriod !== currentPeriod) {
       // A new week has begun. Nothing is deleted — past weeks are kept as a
       // record. The only action is copying RECURRING assignments forward
@@ -1724,3 +1743,4 @@
  
 </body>
 </html>
+ 
