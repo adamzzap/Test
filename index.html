@@ -240,6 +240,11 @@
   .zzap-priorityRow label { font-size:12px; color:var(--ink-soft); }
   .zzap-priorityRow select { height:36px; border:1px solid var(--line); border-radius:6px; font-size:14px; background:var(--surface); color:var(--ink); padding:0 8px; }
   .zzap-empty { text-align:center; color:var(--ink-soft); font-size:13px; padding:24px 0; }
+  .zzap-weekJump {
+    display:inline-block; font-size:12px; font-weight:600; color:var(--accent);
+    background:var(--accent-soft); border:1px solid var(--accent); border-radius:5px;
+    padding:3px 9px; margin:6px 3px 0;
+  }
   .zzap-legend { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); margin:-4px 0 10px; flex-wrap:wrap; }
   .zzap-legendSwatch { width:10px; height:10px; border-radius:2px; display:inline-block; margin-left:8px; }
   .zzap-legendSwatch:first-child { margin-left:0; }
@@ -287,11 +292,14 @@
       <div class="zzap-wordmark">
         <b>zzap</b>
         <span>Weekly Resourcing</span>
-        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v20-standalone</span>
+        <span class="zzap-build" id="build-stamp">Build 2026-07-22 · v21-standalone</span>
         <span class="zzap-build" id="db-url-stamp"></span>
       </div>
       <div class="zzap-headerRight">
         <span class="zzap-statusPill" id="status-pill">Loading…</span>
+        <button class="zzap-iconBtn" id="stat-holiday-btn" aria-label="Add a stat holiday for everyone this week" title="Add a stat holiday for everyone this week">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg>
+        </button>
         <button class="zzap-iconBtn" id="export-btn" aria-label="Download a backup of all weeks" title="Download a backup of all weeks">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
@@ -487,11 +495,11 @@
  
   /* ---------------- App constants (unchanged from the Claude version) ---------------- */
  
-  const BUILD_STAMP = "Build 2026-07-22 · v20-standalone";
+  const BUILD_STAMP = "Build 2026-09-25 · v22-standalone";
  
   const STANDARD_PEOPLE = [
     "Justine", "Joe", "Ross", "Adam", "Zahra", "Mark", "Angela",
-    "Loren", "Paul", "Matt", "Anis", "Kaley",
+    "Loren", "Paul", "Anis", "Kaley",
     "Cassie", "Kyle", "Lisa", "Ishaan",
     "Robert", "Marco", "Melanie", "Tyree", "David", "Unassigned"
   ];
@@ -892,6 +900,7 @@
     statusPill: document.getElementById("status-pill"),
     refreshBtn: document.getElementById("refresh-btn"),
     exportBtn: document.getElementById("export-btn"),
+    statHolidayBtn: document.getElementById("stat-holiday-btn"),
     weekLabel: document.getElementById("week-label"),
     weekRelative: document.getElementById("week-relative"),
     weekPrev: document.getElementById("week-prev"),
@@ -964,7 +973,7 @@
   function vacationTotalsByPerson() {
     const t = {};
     weekAssignments().forEach(function (a) {
-      if (a.phase === "Vacation" && !a.carriedOver) t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0);
+      if ((a.phase === "Vacation" || a.phase === "Holiday") && !a.carriedOver) t[a.person] = (t[a.person] || 0) + Number(a.capacity || 0);
     });
     return t;
   }
@@ -1141,6 +1150,19 @@
     el.peopleList.innerHTML = html;
   }
  
+  // Every distinct week a person has ANY assignment row in, sorted nearest-first.
+  // Used to point directly at leftover data instead of making someone click
+  // through every week with the arrows to find it.
+  function weeksForPerson(person) {
+    const set = {};
+    state.assignments.forEach(function (a) {
+      if (a.person === person) set[a.week] = true;
+    });
+    return Object.keys(set).sort(function (a, b) {
+      return Math.abs(weeksAhead(a, state.weekPeriod)) - Math.abs(weeksAhead(b, state.weekPeriod));
+    });
+  }
+ 
   function renderAssignments() {
     const totals = totalsByPerson();
     const allRows = sortedAssignments();
@@ -1149,10 +1171,23 @@
       : allRows;
     el.filterRow.style.display = allRows.length > 0 ? "" : "none";
     if (rows.length === 0) {
-      el.assignmentsList.innerHTML = '<div class="zzap-empty">' +
-        (state.loading ? "Loading shared data…"
-          : state.filterPerson ? "No assignments for " + escapeHtml(state.filterPerson) + " this week."
-          : "Nothing here yet.") + "</div>";
+      if (state.filterPerson) {
+        const otherWeeks = weeksForPerson(state.filterPerson).filter(function (w) { return w !== state.viewWeek; });
+        if (otherWeeks.length > 0) {
+          el.assignmentsList.innerHTML =
+            '<div class="zzap-empty">No assignments for ' + escapeHtml(state.filterPerson) + ' this week.<br/>' +
+            'Still has data in: ' +
+            otherWeeks.map(function (w) {
+              return '<button class="zzap-weekJump" data-jump-week="' + w + '">' +
+                formatWeekLabel(w) + ' (' + describeWeek(w, state.weekPeriod).toLowerCase() + ')</button>';
+            }).join(" ") +
+            '</div>';
+        } else {
+          el.assignmentsList.innerHTML = '<div class="zzap-empty">No assignments for ' + escapeHtml(state.filterPerson) + ' anywhere — fully clear.</div>';
+        }
+      } else {
+        el.assignmentsList.innerHTML = '<div class="zzap-empty">' + (state.loading ? "Loading shared data…" : "Nothing here yet.") + "</div>";
+      }
       return;
     }
     const people = allPeople();
@@ -1591,6 +1626,29 @@
     }
   }
  
+  function handleAddStatHoliday() {
+    const raw = window.prompt("Stat holiday name (e.g. Thanksgiving Day):", "");
+    if (raw === null) return;
+    const name = raw.trim();
+    if (!name) return;
+    const week = state.viewWeek;
+    const already = {};
+    state.assignments.forEach(function (a) {
+      if (a.week === week && a.phase === "Holiday" && a.project === name) already[a.person] = true;
+    });
+    const targets = STANDARD_PEOPLE.filter(function (p) { return p !== "Unassigned" && !already[p]; });
+    if (!targets.length) {
+      setStatus("Everyone already has \"" + name + "\" this week", "ok");
+      return;
+    }
+    const rows = targets.map(function (person) {
+      return { id: makeId(), person: person, project: name, capacity: 1, phase: "Holiday", priority: "Normal", notes: "", carriedOver: false, recurring: false, week: week };
+    });
+    persist(state.assignments.concat(rows));
+    setStatus("Added \"" + name + "\" (1 day) for " + rows.length + " " + (rows.length === 1 ? "person" : "people"), "ok");
+  }
+ 
+  el.statHolidayBtn.addEventListener("click", handleAddStatHoliday);
   el.exportBtn.addEventListener("click", handleExport);
   el.refreshBtn.addEventListener("click", load);
   el.retryBtn.addEventListener("click", function () { persist(state.assignments); });
@@ -1609,6 +1667,11 @@
     if (delBtn) {
       const id = delBtn.closest("[data-id]").dataset.id;
       persist(state.assignments.filter(function (a) { return a.id !== id; }));
+      return;
+    }
+    const jumpBtn = e.target.closest('[data-jump-week]');
+    if (jumpBtn) {
+      goToWeek(jumpBtn.getAttribute('data-jump-week'));
     }
   });
   el.assignmentsList.addEventListener("change", function (e) {
